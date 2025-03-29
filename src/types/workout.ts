@@ -25,6 +25,21 @@ export interface Workout {
   exercises: Exercise[];
   date: Date;
   weekday?: string;
+  description?: string; // Added for workout sheet description
+  isPublic?: boolean; // Added for sharing functionality
+  shareId?: string; // Added for sharing functionality
 }
 
 export type Weekday = 'Segunda' | 'Terça' | 'Quarta' | 'Quinta' | 'Sexta' | 'Sábado' | 'Domingo';
+
+// New interface for workout sheets
+export interface WorkoutSheet {
+  id: string;
+  name: string;
+  description?: string;
+  weekday?: Weekday;
+  exercises: Exercise[];
+  isPublic: boolean;
+  shareId?: string;
+  createdAt: Date;
+}
