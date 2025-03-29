@@ -17,7 +17,7 @@ interface MuscleGroupSelectorProps {
 }
 
 const MUSCLE_GROUPS: MuscleGroup[] = [
-  'Peito', 'Costas', 'Pernas', 'Ombros', 'Bíceps', 'Tríceps',
+  'Peito', 'Costas', 'Quadríceps', 'Posterior', 'Ombros', 'Bíceps', 'Tríceps',
   'Abdômen', 'Glúteos', 'Panturrilha', 'Antebraço', 'Trapézio', 'Lombar'
 ];
 

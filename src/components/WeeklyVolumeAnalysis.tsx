@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -26,7 +25,8 @@ interface WeeklyVolumeAnalysisProps {
 const MUSCLE_GROUP_COLORS: Record<MuscleGroup, string> = {
   'Peito': '#FF8042',
   'Costas': '#0088FE',
-  'Pernas': '#00C49F',
+  'Quadríceps': '#00C49F',
+  'Posterior': '#7F00FF',
   'Ombros': '#FFBB28',
   'Bíceps': '#FF0000',
   'Tríceps': '#00FF00',

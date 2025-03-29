@@ -33,11 +33,12 @@ export interface Workout {
 
 export type Weekday = 'Segunda' | 'Terça' | 'Quarta' | 'Quinta' | 'Sexta' | 'Sábado' | 'Domingo';
 
-// Novo tipo para grupos musculares
+// Tipo para grupos musculares atualizado
 export type MuscleGroup = 
   | 'Peito'
   | 'Costas'
-  | 'Pernas'
+  | 'Quadríceps'
+  | 'Posterior'
   | 'Ombros'
   | 'Bíceps'
   | 'Tríceps'
