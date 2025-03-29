@@ -12,6 +12,7 @@ export interface Exercise {
   sets: Set[];
   restTimeMinutes: number;
   history?: ExerciseHistory[];
+  muscleGroups?: MuscleGroup[]; // Adicionado grupos musculares
 }
 
 export interface ExerciseHistory {
@@ -25,14 +26,29 @@ export interface Workout {
   exercises: Exercise[];
   date: Date;
   weekday?: string;
-  description?: string; // Added for workout sheet description
-  isPublic?: boolean; // Added for sharing functionality
-  shareId?: string; // Added for sharing functionality
+  description?: string;
+  isPublic?: boolean;
+  shareId?: string;
 }
 
 export type Weekday = 'Segunda' | 'Terça' | 'Quarta' | 'Quinta' | 'Sexta' | 'Sábado' | 'Domingo';
 
-// New interface for workout sheets
+// Novo tipo para grupos musculares
+export type MuscleGroup = 
+  | 'Peito'
+  | 'Costas'
+  | 'Pernas'
+  | 'Ombros'
+  | 'Bíceps'
+  | 'Tríceps'
+  | 'Abdômen'
+  | 'Glúteos'
+  | 'Panturrilha'
+  | 'Antebraço'
+  | 'Trapézio'
+  | 'Lombar';
+
+// Interface para workout sheets
 export interface WorkoutSheet {
   id: string;
   name: string;

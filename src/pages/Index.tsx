@@ -1,7 +1,6 @@
-
 import React, { useState, useEffect } from 'react';
 import { useToast } from "@/components/ui/use-toast";
-import { Button } from "@/components/ui/button"; // Add this import
+import { Button } from "@/components/ui/button";
 import { Exercise, Workout, Weekday, ExerciseHistory, WorkoutSheet } from '@/types/workout';
 import ExerciseCard from '@/components/ExerciseCard';
 import ExerciseForm from '@/components/ExerciseForm';
@@ -10,9 +9,10 @@ import WeekdaySelector from '@/components/WeekdaySelector';
 import ExerciseTabs from '@/components/ExerciseTabs';
 import WorkoutSheetForm from '@/components/WorkoutSheetForm';
 import WorkoutSheetList from '@/components/WorkoutSheetList';
+import WeeklyVolumeAnalysis from '@/components/WeeklyVolumeAnalysis';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { v4 as uuidv4 } from 'uuid';
-import { ClipboardList } from 'lucide-react';
+import { ClipboardList, BarChart3, Dumbbell } from 'lucide-react';
 
 const Index = () => {
   const { toast } = useToast();
@@ -28,14 +28,11 @@ const Index = () => {
   const [workoutSheets, setWorkoutSheets] = useState<WorkoutSheet[]>([]);
   const [activeTab, setActiveTab] = useState("current");
 
-  // Try to load workout, history, and sheets from localStorage
   useEffect(() => {
-    // Load current workout
     const savedWorkout = localStorage.getItem('currentWorkout');
     if (savedWorkout) {
       try {
         const parsedWorkout = JSON.parse(savedWorkout);
-        // Convert string date back to Date object
         parsedWorkout.date = new Date(parsedWorkout.date);
         setWorkout(parsedWorkout);
         if (parsedWorkout.weekday) {
@@ -46,12 +43,10 @@ const Index = () => {
       }
     }
     
-    // Load workout history
     const savedHistory = localStorage.getItem('workoutHistory');
     if (savedHistory) {
       try {
         const parsedHistory = JSON.parse(savedHistory);
-        // Convert string dates back to Date objects for all workouts in history
         Object.keys(parsedHistory).forEach(key => {
           parsedHistory[key] = parsedHistory[key].map((w: any) => ({
             ...w,
@@ -64,12 +59,10 @@ const Index = () => {
       }
     }
     
-    // Load workout sheets
     const savedSheets = localStorage.getItem('workoutSheets');
     if (savedSheets) {
       try {
         const parsedSheets = JSON.parse(savedSheets);
-        // Convert string dates back to Date objects
         parsedSheets.forEach((sheet: any) => {
           sheet.createdAt = new Date(sheet.createdAt);
         });
@@ -81,7 +74,6 @@ const Index = () => {
   }, []);
 
   const handleAddExercise = (exercise: Exercise) => {
-    // Check if exercise already exists in history and add it
     if (workoutHistory) {
       const exerciseHistory: ExerciseHistory[] = [];
       
@@ -120,19 +112,15 @@ const Index = () => {
   const handleSelectWeekday = (day: Weekday) => {
     setSelectedDay(day);
     
-    // Atualizar o treino com o dia da semana selecionado
     setWorkout(prev => ({
       ...prev,
       weekday: day
     }));
     
-    // Verificar se já existe um treino salvo para este dia da semana
     const workoutsForDay = workoutHistory[day] || [];
     if (workoutsForDay.length > 0) {
-      // Usar o último treino deste dia como base
       const lastWorkout = workoutsForDay[workoutsForDay.length - 1];
       
-      // Atualizar apenas os exercícios, mantendo o ID e a data atuais
       setWorkout(prev => ({
         ...prev,
         name: lastWorkout.name,
@@ -156,16 +144,13 @@ const Index = () => {
   };
 
   const handleSaveWorkout = () => {
-    // Salvar treino atual no localStorage
     localStorage.setItem('currentWorkout', JSON.stringify(workout));
     
-    // Apenas salvar no histórico se houver exercícios completados
     const hasCompletedSets = workout.exercises.some(ex => 
       ex.sets.some(set => set.completed)
     );
     
     if (hasCompletedSets) {
-      // Atualizar histórico
       const updatedHistory = { ...workoutHistory };
       const weekday = workout.weekday || 'SemDia';
       
@@ -173,14 +158,12 @@ const Index = () => {
         updatedHistory[weekday] = [];
       }
       
-      // Adicionar treino atual ao histórico
       updatedHistory[weekday].push({
         ...workout,
-        id: uuidv4(), // Gerar novo ID para o histórico
-        date: new Date() // Atualizar para a data atual
+        id: uuidv4(),
+        date: new Date()
       });
       
-      // Salvar histórico atualizado
       setWorkoutHistory(updatedHistory);
       localStorage.setItem('workoutHistory', JSON.stringify(updatedHistory));
       
@@ -197,7 +180,6 @@ const Index = () => {
   };
 
   const handleSaveWorkoutSheet = (workoutSheet: WorkoutSheet) => {
-    // Check if we're updating an existing sheet or creating a new one
     const updatedSheets = workoutSheets.some(sheet => sheet.id === workoutSheet.id)
       ? workoutSheets.map(sheet => sheet.id === workoutSheet.id ? workoutSheet : sheet)
       : [...workoutSheets, workoutSheet];
@@ -223,7 +205,6 @@ const Index = () => {
   };
 
   const handleSelectWorkoutSheet = (sheet: WorkoutSheet) => {
-    // Apply the workout sheet to the current workout
     setWorkout(prev => ({
       ...prev,
       name: sheet.name,
@@ -252,7 +233,6 @@ const Index = () => {
   };
   
   const handleCreateWorkoutSheetFromCurrent = () => {
-    // Create a new workout sheet from the current workout
     if (workout.exercises.length === 0) {
       toast({
         title: "Erro",
@@ -296,11 +276,18 @@ const Index = () => {
         onValueChange={setActiveTab}
         className="mb-6"
       >
-        <TabsList className="grid grid-cols-2 mb-4">
-          <TabsTrigger value="current">Treino Atual</TabsTrigger>
+        <TabsList className="grid grid-cols-3 mb-4">
+          <TabsTrigger value="current" className="flex items-center gap-1">
+            <Dumbbell className="w-4 h-4" />
+            <span>Treino Atual</span>
+          </TabsTrigger>
           <TabsTrigger value="sheets" className="flex items-center gap-1">
             <ClipboardList className="w-4 h-4" />
-            <span>Fichas de Treino</span>
+            <span>Fichas</span>
+          </TabsTrigger>
+          <TabsTrigger value="analysis" className="flex items-center gap-1">
+            <BarChart3 className="w-4 h-4" />
+            <span>Análise</span>
           </TabsTrigger>
         </TabsList>
         
@@ -366,6 +353,10 @@ const Index = () => {
               onDelete={handleDeleteWorkoutSheet}
             />
           </div>
+        </TabsContent>
+        
+        <TabsContent value="analysis">
+          <WeeklyVolumeAnalysis workoutHistory={workoutHistory} />
         </TabsContent>
       </Tabs>
     </div>
