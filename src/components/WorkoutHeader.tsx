@@ -7,15 +7,18 @@ import { CalendarIcon, SaveIcon } from 'lucide-react';
 interface WorkoutHeaderProps {
   date: Date;
   onSave: () => void;
+  selectedDay?: string;
 }
 
-const WorkoutHeader: React.FC<WorkoutHeaderProps> = ({ date, onSave }) => {
+const WorkoutHeader: React.FC<WorkoutHeaderProps> = ({ date, onSave, selectedDay }) => {
   const formattedDate = format(date, "dd 'de' MMMM 'de' yyyy", { locale: ptBR });
   
   return (
     <div className="flex justify-between items-center mb-6">
       <div>
-        <h1 className="text-2xl font-bold text-workout-primary">Meu Treino</h1>
+        <h1 className="text-2xl font-bold text-workout-primary">
+          Meu Treino {selectedDay ? `- ${selectedDay}` : ''}
+        </h1>
         <div className="flex items-center text-gray-500">
           <CalendarIcon className="h-4 w-4 mr-1" />
           <span>{formattedDate}</span>

@@ -11,6 +11,12 @@ export interface Exercise {
   name: string;
   sets: Set[];
   restTimeMinutes: number;
+  history?: ExerciseHistory[];
+}
+
+export interface ExerciseHistory {
+  date: Date;
+  sets: Set[];
 }
 
 export interface Workout {
@@ -18,4 +24,7 @@ export interface Workout {
   name: string;
   exercises: Exercise[];
   date: Date;
+  weekday?: string;
 }
+
+export type Weekday = 'Segunda' | 'Terça' | 'Quarta' | 'Quinta' | 'Sexta' | 'Sábado' | 'Domingo';
