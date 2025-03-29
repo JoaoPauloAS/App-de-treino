@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/dialog';
 import { WorkoutSheet } from '@/types/workout';
 import { Share2, Copy, Check } from 'lucide-react';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 
 interface ShareWorkoutSheetProps {
   workoutSheet: WorkoutSheet;
