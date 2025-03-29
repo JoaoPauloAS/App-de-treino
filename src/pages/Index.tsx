@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useToast } from "@/components/ui/use-toast";
+import { Button } from "@/components/ui/button"; // Add this import
 import { Exercise, Workout, Weekday, ExerciseHistory, WorkoutSheet } from '@/types/workout';
 import ExerciseCard from '@/components/ExerciseCard';
 import ExerciseForm from '@/components/ExerciseForm';
