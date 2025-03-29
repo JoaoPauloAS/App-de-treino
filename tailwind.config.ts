@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,6 +62,13 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				workout: {
+					primary: '#0EA5E9',
+					secondary: '#10B981',
+					accent: '#8B5CF6',
+					background: '#F8FAFC',
+					card: '#FFFFFF'
 				}
 			},
 			borderRadius: {
