@@ -11,12 +11,19 @@ import RestTimer from './RestTimer';
 interface ExerciseCardProps {
   exercise: Exercise;
   onExerciseUpdate: (updatedExercise: Exercise) => void;
+  readOnly?: boolean; // Added readOnly prop
 }
 
-const ExerciseCard: React.FC<ExerciseCardProps> = ({ exercise, onExerciseUpdate }) => {
+const ExerciseCard: React.FC<ExerciseCardProps> = ({ 
+  exercise, 
+  onExerciseUpdate, 
+  readOnly = false // Default to false
+}) => {
   const [isTimerActive, setIsTimerActive] = useState(false);
 
   const addSet = () => {
+    if (readOnly) return; // Don't add sets in readOnly mode
+    
     const newSet: Set = {
       id: uuidv4(),
       reps: 0,
@@ -33,6 +40,8 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({ exercise, onExerciseUpdate 
   };
 
   const removeSet = (setId: string) => {
+    if (readOnly) return; // Don't remove sets in readOnly mode
+    
     const updatedExercise = {
       ...exercise,
       sets: exercise.sets.filter(set => set.id !== setId),
@@ -42,6 +51,8 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({ exercise, onExerciseUpdate 
   };
 
   const updateSet = (setId: string, field: keyof Set, value: any) => {
+    if (readOnly) return; // Don't update sets in readOnly mode
+    
     const updatedSets = exercise.sets.map(set => {
       if (set.id === setId) {
         return { ...set, [field]: value };
@@ -58,6 +69,8 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({ exercise, onExerciseUpdate 
   };
 
   const updateRestTime = (minutes: number) => {
+    if (readOnly) return; // Don't update rest time in readOnly mode
+    
     const updatedExercise = {
       ...exercise,
       restTimeMinutes: minutes,
@@ -67,6 +80,7 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({ exercise, onExerciseUpdate 
   };
 
   const toggleTimer = () => {
+    if (readOnly) return; // Don't toggle timer in readOnly mode
     setIsTimerActive(!isTimerActive);
   };
 
@@ -81,6 +95,7 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({ exercise, onExerciseUpdate 
               size="sm" 
               className="flex items-center gap-1"
               onClick={toggleTimer}
+              disabled={readOnly}
             >
               <Clock className="h-4 w-4" />
               <span>{exercise.restTimeMinutes}m</span>
@@ -118,6 +133,7 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({ exercise, onExerciseUpdate 
                   value={set.reps || ''}
                   onChange={(e) => updateSet(set.id, 'reps', Number(e.target.value))}
                   className="h-9"
+                  disabled={readOnly}
                 />
               </div>
               <div className="col-span-4">
@@ -128,6 +144,7 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({ exercise, onExerciseUpdate 
                   value={set.weight || ''}
                   onChange={(e) => updateSet(set.id, 'weight', Number(e.target.value))}
                   className="h-9"
+                  disabled={readOnly}
                 />
               </div>
               <div className="col-span-3 flex justify-start">
@@ -136,6 +153,7 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({ exercise, onExerciseUpdate 
                   size="sm"
                   className={`w-9 h-9 p-0 ${set.completed ? 'bg-workout-secondary' : ''}`}
                   onClick={() => updateSet(set.id, 'completed', !set.completed)}
+                  disabled={readOnly}
                 >
                   {set.completed ? (
                     <Check className="h-4 w-4" />
@@ -143,26 +161,30 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({ exercise, onExerciseUpdate 
                     <X className="h-4 w-4" />
                   )}
                 </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="w-9 h-9 p-0 ml-1"
-                  onClick={() => removeSet(set.id)}
-                >
-                  <Minus className="h-4 w-4 text-red-500" />
-                </Button>
+                {!readOnly && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="w-9 h-9 p-0 ml-1"
+                    onClick={() => removeSet(set.id)}
+                  >
+                    <Minus className="h-4 w-4 text-red-500" />
+                  </Button>
+                )}
               </div>
             </div>
           ))}
         </div>
         
-        <Button 
-          onClick={addSet}
-          variant="outline" 
-          className="w-full flex items-center justify-center gap-1"
-        >
-          <Plus className="h-4 w-4" /> Adicionar série
-        </Button>
+        {!readOnly && (
+          <Button 
+            onClick={addSet}
+            variant="outline" 
+            className="w-full flex items-center justify-center gap-1"
+          >
+            <Plus className="h-4 w-4" /> Adicionar série
+          </Button>
+        )}
       </CardContent>
     </Card>
   );

@@ -39,7 +39,10 @@ const ExerciseTabs: React.FC<ExerciseTabsProps> = ({ exercise, children, comment
       
       {hasHistory && (
         <TabsContent value="history">
-          <ExerciseHistory exercise={exercise} />
+          <ExerciseHistory 
+            history={exercise.history || []} 
+            exerciseName={exercise.name} 
+          />
         </TabsContent>
       )}
       
