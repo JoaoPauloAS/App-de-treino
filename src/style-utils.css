@@ -58,3 +58,29 @@
 .dark .card-hover:hover {
   box-shadow: 0 12px 20px -10px rgba(0, 0, 0, 0.25);
 }
+
+/* Efeito de brilho para cards ativos */
+.active-card-glow {
+  box-shadow: 0 0 10px 0 rgba(79, 70, 229, 0.3);
+}
+
+.dark .active-card-glow {
+  box-shadow: 0 0 15px 0 rgba(79, 70, 229, 0.4);
+}
+
+/* Efeito de pulsação suave para cards ativos */
+@keyframes softPulse {
+  0% {
+    box-shadow: 0 0 10px 0 rgba(79, 70, 229, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 15px 3px rgba(79, 70, 229, 0.3);
+  }
+  100% {
+    box-shadow: 0 0 10px 0 rgba(79, 70, 229, 0.2);
+  }
+}
+
+.pulse-active {
+  animation: softPulse 3s infinite;
+}

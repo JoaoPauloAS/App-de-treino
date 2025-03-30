@@ -1,4 +1,3 @@
-
 export interface Set {
   id: string;
   reps: number;
@@ -102,4 +101,16 @@ export interface User {
   workoutSheets?: WorkoutSheet[];
   savedWorkouts?: string[]; // IDs de treinos salvos
   bodyMeasurements?: BodyMeasurement[];
+}
+
+// Nova interface para meso ciclos
+export interface MesoCycle {
+  id: string;
+  name: string;
+  description?: string;
+  startDate: Date;
+  endDate: Date;
+  workoutSheetIds: string[]; // IDs das fichas de treino incluídas neste meso ciclo
+  createdAt: Date;
+  createdBy?: string; // ID do usuário que criou
 }

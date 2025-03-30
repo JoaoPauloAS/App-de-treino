@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import SharedWorkout from "./pages/SharedWorkout";
 import SharedWorkouts from "./pages/SharedWorkouts";
+import MesoCycles from "./pages/MesoCycles";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
 import { ThemeProvider } from "./hooks/use-theme";
@@ -34,6 +35,7 @@ const App = () => (
                 <Route path="/" element={<Index />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/shared" element={<SharedWorkouts />} />
+                <Route path="/mesocycles" element={<MesoCycles />} />
                 <Route path="/workout/:id" element={<SharedWorkout />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
