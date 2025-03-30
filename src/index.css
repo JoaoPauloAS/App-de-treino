@@ -5,7 +5,7 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
+    --background: 220 100% 99%;
     --foreground: 222.2 84% 4.9%;
 
     --card: 0 0% 100%;
@@ -14,17 +14,17 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 199 89% 48%;
+    --primary: 221 83% 53%;
     --primary-foreground: 210 40% 98%;
 
-    --secondary: 160 84% 39%;
+    --secondary: 219 78% 45%;
     --secondary-foreground: 222.2 47.4% 11.2%;
 
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
 
-    --accent: 262 60% 64%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 238 75% 63%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
@@ -33,7 +33,7 @@
     --input: 214.3 31.8% 91.4%;
     --ring: 199 89% 48%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
@@ -46,25 +46,25 @@
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
+    --background: 220 20% 12%;
     --foreground: 210 40% 98%;
 
-    --card: 222.2 84% 4.9%;
+    --card: 220 20% 15%;
     --card-foreground: 210 40% 98%;
 
-    --popover: 222.2 84% 4.9%;
+    --popover: 220 20% 12%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 199 89% 48%;
+    --primary: 217 91% 60%;
     --primary-foreground: 222.2 47.4% 11.2%;
 
-    --secondary: 160 84% 39%;
+    --secondary: 219 78% 45%;
     --secondary-foreground: 210 40% 98%;
 
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
 
-    --accent: 262 60% 64%;
+    --accent: 238 75% 63%;
     --accent-foreground: 210 40% 98%;
 
     --destructive: 0 62.8% 30.6%;
@@ -87,26 +87,59 @@
 
 @layer base {
   * {
-    @apply border-border;
+    @apply border-border transition-colors duration-200;
   }
 
   body {
-    @apply bg-workout-background text-foreground;
+    @apply bg-background text-foreground;
+  }
+  
+  ::selection {
+    @apply bg-primary/20 text-primary;
   }
 }
 
 .workout-card {
-  @apply bg-workout-card rounded-lg shadow-md p-4 mb-4;
+  @apply bg-card rounded-lg shadow-md p-4 mb-4 border border-border/40 hover:border-border/70;
 }
 
 .workout-header {
-  @apply text-xl font-bold text-workout-primary mb-2;
+  @apply text-xl font-bold text-primary mb-2;
 }
 
 .workout-button {
-  @apply bg-workout-primary text-white rounded-md px-4 py-2 hover:bg-blue-600 transition-colors;
+  @apply bg-primary text-primary-foreground rounded-md px-4 py-2 hover:bg-primary/90 transition-colors;
 }
 
 .rest-timer {
-  @apply bg-workout-secondary text-white rounded-md px-4 py-2;
+  @apply bg-secondary text-secondary-foreground rounded-md px-4 py-2;
 }
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fade-in 0.3s ease-out forwards;
+}
+
+.glass-card {
+  @apply bg-card/70 backdrop-blur-sm border border-border/50 shadow-lg;
+}
+
+/* Animações suaves para os cards */
+.card, .button {
+  @apply transition-all duration-200;
+}
+
+.card:hover {
+  @apply shadow-lg transform translate-y-[-2px];
+}
+

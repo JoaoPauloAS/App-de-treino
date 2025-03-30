@@ -12,25 +12,34 @@ import NotFound from "./pages/NotFound";
 import { ThemeProvider } from "./hooks/use-theme";
 import { AuthProvider } from "./context/AuthContext";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      retry: 1,
+    },
+  },
+});
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <ThemeProvider defaultTheme="system">
       <AuthProvider>
         <TooltipProvider>
-          <Toaster />
-          <Sonner position="top-right" />
-          <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/shared" element={<SharedWorkouts />} />
-              <Route path="/workout/:id" element={<SharedWorkout />} />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
+          <div className="min-h-[100dvh] bg-background text-foreground antialiased">
+            <Toaster />
+            <Sonner position="top-right" closeButton />
+            <BrowserRouter>
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/shared" element={<SharedWorkouts />} />
+                <Route path="/workout/:id" element={<SharedWorkout />} />
+                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </BrowserRouter>
+          </div>
         </TooltipProvider>
       </AuthProvider>
     </ThemeProvider>
