@@ -1,161 +1,311 @@
 
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { WorkoutSheet, Exercise } from '@/types/workout';
 import { Button } from '@/components/ui/button';
-import { 
-  Card, 
-  CardHeader, 
-  CardTitle, 
-  CardDescription, 
-  CardContent
-} from '@/components/ui/card';
-import { CalendarIcon, ArrowLeft, Copy } from 'lucide-react';
-import { useToast } from '@/components/ui/use-toast';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import ExerciseTabs from '@/components/ExerciseTabs';
+import ExerciseCard from '@/components/ExerciseCard';
+import { useToast } from '@/hooks/use-toast';
+import { Share, ArrowLeft, Bookmark, BookmarkCheck } from 'lucide-react';
+import ThemeToggle from '@/components/ThemeToggle';
+import { useAuth } from '@/context/AuthContext';
+import ExerciseCommentsTab from '@/components/ExerciseCommentsTab';
+import { v4 as uuidv4 } from 'uuid';
 
 const SharedWorkout = () => {
   const { id } = useParams<{ id: string }>();
-  const [workoutSheet, setWorkoutSheet] = useState<WorkoutSheet | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
+  const navigate = useNavigate();
   const { toast } = useToast();
+  const { user, isAuthenticated } = useAuth();
+  
+  const [workout, setWorkout] = useState<WorkoutSheet | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaved, setIsSaved] = useState(false);
 
   useEffect(() => {
     if (!id) {
-      setError(true);
-      setLoading(false);
+      navigate('/');
       return;
     }
 
-    // Load workout sheets from localStorage
-    const savedSheets = localStorage.getItem('workoutSheets');
-    if (savedSheets) {
-      try {
-        const parsedSheets: WorkoutSheet[] = JSON.parse(savedSheets);
-        // Convert string dates back to Date objects
-        parsedSheets.forEach(sheet => {
-          sheet.createdAt = new Date(sheet.createdAt);
-        });
-
-        // Find the sheet with the matching shareId
-        const sheet = parsedSheets.find(s => s.shareId === id && s.isPublic);
-        
-        if (sheet) {
-          setWorkoutSheet(sheet);
-        } else {
-          setError(true);
+    const fetchWorkout = () => {
+      setIsLoading(true);
+      
+      // Buscar de localStorage (em produção seria uma API)
+      const workoutSheets = localStorage.getItem('workoutSheets');
+      
+      if (workoutSheets) {
+        try {
+          const sheets = JSON.parse(workoutSheets);
+          
+          // Buscar por ID ou shareId
+          const foundWorkout = sheets.find((sheet: WorkoutSheet) => 
+            sheet.id === id || sheet.shareId === id
+          );
+          
+          if (foundWorkout) {
+            setWorkout(foundWorkout);
+            
+            // Verificar se o treino está salvo pelo usuário
+            if (isAuthenticated && user?.savedWorkouts) {
+              setIsSaved(user.savedWorkouts.includes(foundWorkout.id));
+            }
+          } else {
+            toast({
+              title: "Treino não encontrado",
+              description: "O treino que você está tentando acessar não existe.",
+              variant: "destructive",
+            });
+            navigate('/');
+          }
+        } catch (error) {
+          console.error('Erro ao buscar treino:', error);
+          toast({
+            title: "Erro",
+            description: "Ocorreu um erro ao buscar o treino.",
+            variant: "destructive",
+          });
         }
-      } catch (err) {
-        console.error('Error parsing workout sheets:', err);
-        setError(true);
       }
-    } else {
-      setError(true);
-    }
-    
-    setLoading(false);
-  }, [id]);
-
-  const handleCopyWorkout = () => {
-    if (!workoutSheet) return;
-    
-    // Load existing workouts
-    const savedWorkouts = localStorage.getItem('workoutHistory') || '{}';
-    const workoutHistory = JSON.parse(savedWorkouts);
-    
-    // Create a new workout based on the shared workout sheet
-    const newWorkout = {
-      id: crypto.randomUUID(),
-      name: workoutSheet.name,
-      exercises: workoutSheet.exercises,
-      date: new Date(),
-      weekday: workoutSheet.weekday
+      
+      setIsLoading(false);
     };
     
-    // Add the new workout to localStorage
-    if (workoutSheet.weekday) {
-      if (!workoutHistory[workoutSheet.weekday]) {
-        workoutHistory[workoutSheet.weekday] = [];
+    fetchWorkout();
+  }, [id, navigate, toast, user, isAuthenticated]);
+
+  const handleExerciseUpdate = (updatedExercise: Exercise) => {
+    if (!workout) return;
+    
+    const updatedExercises = workout.exercises.map(ex => 
+      ex.id === updatedExercise.id ? updatedExercise : ex
+    );
+    
+    const updatedWorkout = {
+      ...workout,
+      exercises: updatedExercises
+    };
+    
+    // Atualizar na memória
+    setWorkout(updatedWorkout);
+    
+    // Atualizar no localStorage (em produção seria uma API)
+    const workoutSheets = localStorage.getItem('workoutSheets');
+    
+    if (workoutSheets) {
+      try {
+        const sheets = JSON.parse(workoutSheets);
+        
+        const updatedSheets = sheets.map((sheet: WorkoutSheet) => 
+          sheet.id === workout.id ? updatedWorkout : sheet
+        );
+        
+        localStorage.setItem('workoutSheets', JSON.stringify(updatedSheets));
+      } catch (error) {
+        console.error('Erro ao atualizar treino:', error);
       }
-      workoutHistory[workoutSheet.weekday].push(newWorkout);
-      localStorage.setItem('workoutHistory', JSON.stringify(workoutHistory));
+    }
+  };
+
+  const handleSaveWorkout = () => {
+    if (!isAuthenticated) {
+      toast({
+        title: "Não autenticado",
+        description: "Faça login para salvar este treino.",
+      });
+      navigate('/login');
+      return;
     }
     
-    // Save as current workout
-    localStorage.setItem('currentWorkout', JSON.stringify(newWorkout));
+    if (!workout || !user) return;
+    
+    // Atualizar lista de treinos salvos do usuário
+    const updatedSavedWorkouts = user.savedWorkouts 
+      ? [...user.savedWorkouts, workout.id]
+      : [workout.id];
+    
+    const updatedUser = {
+      ...user,
+      savedWorkouts: updatedSavedWorkouts
+    };
+    
+    // Atualizar no localStorage
+    localStorage.setItem('user', JSON.stringify(updatedUser));
+    
+    setIsSaved(true);
     
     toast({
-      title: "Ficha copiada",
-      description: "A ficha foi copiada e está pronta para uso.",
+      title: "Treino salvo",
+      description: "O treino foi adicionado aos seus favoritos.",
     });
   };
 
-  if (loading) {
-    return <div className="text-center py-12">Carregando...</div>;
+  const handleRemoveSavedWorkout = () => {
+    if (!isAuthenticated || !workout || !user) return;
+    
+    // Remover da lista de treinos salvos do usuário
+    const updatedSavedWorkouts = user.savedWorkouts?.filter(id => id !== workout.id) || [];
+    
+    const updatedUser = {
+      ...user,
+      savedWorkouts: updatedSavedWorkouts
+    };
+    
+    // Atualizar no localStorage
+    localStorage.setItem('user', JSON.stringify(updatedUser));
+    
+    setIsSaved(false);
+    
+    toast({
+      title: "Treino removido",
+      description: "O treino foi removido dos seus favoritos.",
+    });
+  };
+
+  const handleUseWorkout = () => {
+    if (!workout) return;
+    
+    // Criar um novo treino a partir da ficha compartilhada
+    const newWorkout = {
+      id: uuidv4(),
+      name: workout.name,
+      exercises: workout.exercises.map(ex => ({
+        ...ex,
+        id: uuidv4(),
+        sets: ex.sets.map(set => ({
+          ...set,
+          id: uuidv4(),
+          completed: false
+        }))
+      })),
+      date: new Date(),
+      weekday: workout.weekday
+    };
+    
+    // Salvar no localStorage
+    localStorage.setItem('currentWorkout', JSON.stringify(newWorkout));
+    
+    toast({
+      title: "Treino aplicado",
+      description: "O treino foi aplicado ao seu treino atual.",
+    });
+    
+    navigate('/');
+  };
+
+  const handleShareWorkout = () => {
+    const shareUrl = `${window.location.origin}/workout/${id}`;
+    
+    navigator.clipboard.writeText(shareUrl);
+    
+    toast({
+      title: "Link copiado",
+      description: "Link para compartilhamento copiado para a área de transferência.",
+    });
+  };
+
+  if (isLoading) {
+    return (
+      <div className="container mx-auto px-4 py-6 max-w-2xl">
+        <div className="text-center">Carregando treino...</div>
+      </div>
+    );
   }
 
-  if (error || !workoutSheet) {
+  if (!workout) {
     return (
-      <div className="container mx-auto px-4 py-12 max-w-2xl">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold mb-4">Ficha não encontrada</h1>
-          <p className="mb-6">A ficha de treino que você está procurando não existe ou não está disponível para compartilhamento.</p>
-          <Link to="/">
-            <Button>
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Voltar para o início
-            </Button>
-          </Link>
-        </div>
+      <div className="container mx-auto px-4 py-6 max-w-2xl">
+        <div className="text-center">Treino não encontrado</div>
+        <Button onClick={() => navigate('/')} className="mt-4">
+          Voltar para a página inicial
+        </Button>
       </div>
     );
   }
 
   return (
     <div className="container mx-auto px-4 py-6 max-w-2xl">
-      <div className="mb-6 flex justify-between items-center">
-        <Link to="/">
-          <Button variant="outline" size="sm">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Voltar
-          </Button>
-        </Link>
-        <Button onClick={handleCopyWorkout}>
-          <Copy className="mr-2 h-4 w-4" />
-          Copiar Ficha
+      <div className="flex justify-between items-center mb-6">
+        <Button variant="outline" onClick={() => navigate(-1)}>
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Voltar
         </Button>
+        <ThemeToggle />
       </div>
       
       <Card className="mb-6">
         <CardHeader>
-          <CardTitle>{workoutSheet.name}</CardTitle>
+          <CardTitle className="text-xl">{workout.name}</CardTitle>
           <CardDescription>
-            {workoutSheet.weekday && (
-              <div className="flex items-center text-sm">
-                <CalendarIcon className="h-4 w-4 mr-1" />
-                <span>{workoutSheet.weekday}</span>
-              </div>
-            )}
+            {workout.weekday && `Dia: ${workout.weekday}`}
+            {workout.description && <div>{workout.description}</div>}
           </CardDescription>
         </CardHeader>
+        
         <CardContent>
-          {workoutSheet.description && (
-            <p className="mb-4">{workoutSheet.description}</p>
-          )}
-          
-          <h3 className="text-lg font-medium mb-4">Exercícios</h3>
-          <div className="space-y-4">
-            {workoutSheet.exercises.map((exercise: Exercise) => (
-              <div key={exercise.id} className="p-4 border rounded-md">
-                <h4 className="font-medium">{exercise.name}</h4>
-                <div className="mt-2 text-sm text-muted-foreground">
-                  <p>{exercise.sets.length} séries • {exercise.restTimeMinutes} min de descanso</p>
-                </div>
-              </div>
-            ))}
+          <div className="text-sm text-muted-foreground mb-2">
+            {workout.exercises.length} exercícios
           </div>
         </CardContent>
+        
+        <CardFooter className="flex justify-between">
+          <div className="flex gap-2">
+            <Button onClick={handleUseWorkout}>
+              Usar este treino
+            </Button>
+            
+            <Button variant="outline" onClick={handleShareWorkout}>
+              <Share className="w-4 h-4 mr-1" />
+              Compartilhar
+            </Button>
+          </div>
+          
+          {isAuthenticated && (
+            isSaved ? (
+              <Button variant="outline" onClick={handleRemoveSavedWorkout}>
+                <BookmarkCheck className="w-4 h-4 mr-1" />
+                Salvo
+              </Button>
+            ) : (
+              <Button variant="outline" onClick={handleSaveWorkout}>
+                <Bookmark className="w-4 h-4 mr-1" />
+                Salvar
+              </Button>
+            )
+          )}
+        </CardFooter>
       </Card>
+      
+      <div className="space-y-4">
+        <h2 className="text-xl font-bold mb-4">Exercícios</h2>
+        
+        {workout.exercises.map(exercise => (
+          <div key={exercise.id} className="bg-card rounded-lg shadow-md overflow-hidden">
+            <ExerciseTabs 
+              exercise={exercise}
+              commentTab={
+                <ExerciseCommentsTab
+                  exercise={exercise}
+                  onExerciseUpdate={handleExerciseUpdate}
+                />
+              }
+            >
+              <ExerciseCard
+                exercise={exercise}
+                onExerciseUpdate={handleExerciseUpdate}
+                readOnly={true}
+              />
+            </ExerciseTabs>
+          </div>
+        ))}
+      </div>
+      
+      <div className="mt-6">
+        <Button onClick={() => navigate('/')}>
+          Voltar para meus treinos
+        </Button>
+      </div>
     </div>
   );
 };

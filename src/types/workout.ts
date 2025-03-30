@@ -6,13 +6,22 @@ export interface Set {
   completed: boolean;
 }
 
+export interface Comment {
+  id: string;
+  userId: string;
+  userName: string;
+  text: string;
+  createdAt: Date;
+}
+
 export interface Exercise {
   id: string;
   name: string;
   sets: Set[];
   restTimeMinutes: number;
   history?: ExerciseHistory[];
-  muscleGroups?: MuscleGroup[]; // Adicionado grupos musculares
+  muscleGroups?: MuscleGroup[];
+  comments?: Comment[]; // Adicionado comentários
 }
 
 export interface ExerciseHistory {
@@ -29,6 +38,8 @@ export interface Workout {
   description?: string;
   isPublic?: boolean;
   shareId?: string;
+  createdBy?: string; // ID do usuário que criou
+  sharedWith?: string[]; // Lista de IDs de usuários com quem foi compartilhado
 }
 
 export type Weekday = 'Segunda' | 'Terça' | 'Quarta' | 'Quinta' | 'Sexta' | 'Sábado' | 'Domingo';
@@ -59,6 +70,8 @@ export interface WorkoutSheet {
   isPublic: boolean;
   shareId?: string;
   createdAt: Date;
+  createdBy?: string; // ID do usuário que criou
+  sharedWith?: string[]; // Lista de IDs de usuários com quem foi compartilhado
 }
 
 // Nova interface para medições corporais
@@ -77,4 +90,16 @@ export interface BodyMeasurement {
   calfLeft?: number; // panturrilha esquerda em cm
   calfRight?: number; // panturrilha direita em cm
   notes?: string; // anotações adicionais
+}
+
+// Interface para o usuário
+export interface User {
+  id: string;
+  username: string;
+  email: string;
+  createdAt: Date;
+  workouts?: Workout[];
+  workoutSheets?: WorkoutSheet[];
+  savedWorkouts?: string[]; // IDs de treinos salvos
+  bodyMeasurements?: BodyMeasurement[];
 }

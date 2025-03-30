@@ -1,35 +1,50 @@
 
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import ExerciseHistoryComponent from './ExerciseHistory';
 import { Exercise } from '@/types/workout';
-import { BarChart3 } from 'lucide-react';
+import ExerciseHistory from './ExerciseHistory';
+import { MessageSquare } from 'lucide-react';
 
 interface ExerciseTabsProps {
   exercise: Exercise;
-  children: React.ReactNode;
+  children: ReactNode;
+  commentTab?: ReactNode;
 }
 
-const ExerciseTabs: React.FC<ExerciseTabsProps> = ({ exercise, children }) => {
+const ExerciseTabs: React.FC<ExerciseTabsProps> = ({ exercise, children, commentTab }) => {
+  const hasHistory = exercise.history && exercise.history.length > 0;
+  const hasComments = exercise.comments && exercise.comments.length > 0;
+  
+  const commentCount = exercise.comments?.length || 0;
+
   return (
-    <Tabs defaultValue="current" className="w-full">
-      <TabsList className="grid grid-cols-2 mb-4">
-        <TabsTrigger value="current">Treino atual</TabsTrigger>
-        <TabsTrigger value="history" className="flex items-center gap-1">
-          <BarChart3 className="w-4 h-4" />
-          <span>Histórico</span>
+    <Tabs defaultValue="exercise">
+      <TabsList className="w-full">
+        <TabsTrigger value="exercise">Exercício</TabsTrigger>
+        {hasHistory && <TabsTrigger value="history">Histórico</TabsTrigger>}
+        <TabsTrigger value="comments" className="flex items-center gap-1">
+          <MessageSquare className="w-4 h-4" />
+          <span>Comentários</span>
+          {commentCount > 0 && (
+            <span className="ml-1 bg-primary/20 text-primary rounded-full px-2 py-0.5 text-xs">
+              {commentCount}
+            </span>
+          )}
         </TabsTrigger>
       </TabsList>
       
-      <TabsContent value="current" className="mt-0">
+      <TabsContent value="exercise">
         {children}
       </TabsContent>
       
-      <TabsContent value="history" className="mt-0">
-        <ExerciseHistoryComponent 
-          history={exercise.history || []} 
-          exerciseName={exercise.name} 
-        />
+      {hasHistory && (
+        <TabsContent value="history">
+          <ExerciseHistory exercise={exercise} />
+        </TabsContent>
+      )}
+      
+      <TabsContent value="comments">
+        {commentTab}
       </TabsContent>
     </Tabs>
   );

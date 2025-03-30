@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Exercise, Workout, Weekday, ExerciseHistory, WorkoutSheet, BodyMeasurement } from '@/types/workout';
 import ExerciseCard from '@/components/ExerciseCard';
@@ -13,13 +13,19 @@ import WorkoutSheetList from '@/components/WorkoutSheetList';
 import WeeklyVolumeAnalysis from '@/components/WeeklyVolumeAnalysis';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { v4 as uuidv4 } from 'uuid';
-import { ClipboardList, BarChart3, Dumbbell, Ruler } from 'lucide-react';
+import { ClipboardList, BarChart3, Dumbbell, Ruler, Users, LogIn, LogOut } from 'lucide-react';
 import ThemeToggle from '@/components/ThemeToggle';
 import WorkoutStats from '@/components/WorkoutStats';
 import BodyMeasurements from '@/components/BodyMeasurements';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/context/AuthContext';
+import ExerciseCommentsTab from '@/components/ExerciseCommentsTab';
 
 const Index = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
+  const { user, isAuthenticated, logout } = useAuth();
+  
   const [workout, setWorkout] = useState<Workout>({
     id: uuidv4(),
     name: 'Meu Treino',
@@ -148,7 +154,13 @@ const Index = () => {
   };
 
   const handleSaveWorkout = () => {
-    localStorage.setItem('currentWorkout', JSON.stringify(workout));
+    // Adicionar informações do usuário
+    const workoutToSave = {
+      ...workout,
+      createdBy: user?.id
+    };
+    
+    localStorage.setItem('currentWorkout', JSON.stringify(workoutToSave));
     
     const hasCompletedSets = workout.exercises.some(ex => 
       ex.sets.some(set => set.completed)
@@ -163,7 +175,7 @@ const Index = () => {
       }
       
       updatedHistory[weekday].push({
-        ...workout,
+        ...workoutToSave,
         id: uuidv4(),
         date: new Date()
       });
@@ -184,9 +196,15 @@ const Index = () => {
   };
 
   const handleSaveWorkoutSheet = (workoutSheet: WorkoutSheet) => {
-    const updatedSheets = workoutSheets.some(sheet => sheet.id === workoutSheet.id)
-      ? workoutSheets.map(sheet => sheet.id === workoutSheet.id ? workoutSheet : sheet)
-      : [...workoutSheets, workoutSheet];
+    // Adicionar informações do usuário
+    const sheetToSave = {
+      ...workoutSheet,
+      createdBy: user?.id
+    };
+    
+    const updatedSheets = workoutSheets.some(sheet => sheet.id === sheetToSave.id)
+      ? workoutSheets.map(sheet => sheet.id === sheetToSave.id ? sheetToSave : sheet)
+      : [...workoutSheets, sheetToSave];
     
     setWorkoutSheets(updatedSheets);
     localStorage.setItem('workoutSheets', JSON.stringify(updatedSheets));
@@ -260,6 +278,7 @@ const Index = () => {
       isPublic: false,
       shareId: uuidv4(),
       createdAt: new Date(),
+      createdBy: user?.id,
     };
     
     setWorkoutSheets([...workoutSheets, newWorkoutSheet]);
@@ -275,8 +294,54 @@ const Index = () => {
 
   return (
     <div className="container mx-auto px-4 py-6 max-w-2xl">
-      <div className="flex justify-end mb-4">
-        <ThemeToggle />
+      <div className="flex justify-between items-center mb-4">
+        <div>
+          {isAuthenticated && (
+            <div className="text-sm">
+              Olá, <span className="font-medium">{user?.username}</span>
+            </div>
+          )}
+        </div>
+        <div className="flex items-center gap-2">
+          {isAuthenticated ? (
+            <>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => navigate('/shared')}
+              >
+                <Users className="w-4 h-4 mr-1" />
+                Treinos Compartilhados
+              </Button>
+              
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => {
+                  logout();
+                  toast({
+                    title: "Logout realizado",
+                    description: "Você saiu da sua conta com sucesso.",
+                  });
+                }}
+              >
+                <LogOut className="w-4 h-4 mr-1" />
+                Sair
+              </Button>
+            </>
+          ) : (
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => navigate('/login')}
+            >
+              <LogIn className="w-4 h-4 mr-1" />
+              Login / Cadastro
+            </Button>
+          )}
+          
+          <ThemeToggle />
+        </div>
       </div>
       
       <Tabs 
@@ -338,7 +403,15 @@ const Index = () => {
           <div className="mb-6 space-y-4">
             {workout.exercises.map(exercise => (
               <div key={exercise.id} className="bg-card rounded-lg shadow-md overflow-hidden">
-                <ExerciseTabs exercise={exercise}>
+                <ExerciseTabs 
+                  exercise={exercise}
+                  commentTab={
+                    <ExerciseCommentsTab 
+                      exercise={exercise} 
+                      onExerciseUpdate={handleUpdateExercise} 
+                    />
+                  }
+                >
                   <ExerciseCard
                     exercise={exercise}
                     onExerciseUpdate={handleUpdateExercise}
