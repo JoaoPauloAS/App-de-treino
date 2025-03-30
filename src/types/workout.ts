@@ -60,3 +60,21 @@ export interface WorkoutSheet {
   shareId?: string;
   createdAt: Date;
 }
+
+// Nova interface para medições corporais
+export interface BodyMeasurement {
+  id: string;
+  date: Date;
+  weight?: number; // peso em kg
+  height?: number; // altura em cm
+  chest?: number; // peitoral em cm
+  waist?: number; // cintura em cm
+  hips?: number; // quadril em cm
+  bicepsLeft?: number; // bíceps esquerdo em cm
+  bicepsRight?: number; // bíceps direito em cm
+  thighLeft?: number; // coxa esquerda em cm
+  thighRight?: number; // coxa direita em cm
+  calfLeft?: number; // panturrilha esquerda em cm
+  calfRight?: number; // panturrilha direita em cm
+  notes?: string; // anotações adicionais
+}

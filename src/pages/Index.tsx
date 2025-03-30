@@ -1,7 +1,8 @@
+
 import React, { useState, useEffect } from 'react';
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
-import { Exercise, Workout, Weekday, ExerciseHistory, WorkoutSheet } from '@/types/workout';
+import { Exercise, Workout, Weekday, ExerciseHistory, WorkoutSheet, BodyMeasurement } from '@/types/workout';
 import ExerciseCard from '@/components/ExerciseCard';
 import ExerciseForm from '@/components/ExerciseForm';
 import WorkoutHeader from '@/components/WorkoutHeader';
@@ -12,7 +13,10 @@ import WorkoutSheetList from '@/components/WorkoutSheetList';
 import WeeklyVolumeAnalysis from '@/components/WeeklyVolumeAnalysis';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { v4 as uuidv4 } from 'uuid';
-import { ClipboardList, BarChart3, Dumbbell } from 'lucide-react';
+import { ClipboardList, BarChart3, Dumbbell, Ruler } from 'lucide-react';
+import ThemeToggle from '@/components/ThemeToggle';
+import WorkoutStats from '@/components/WorkoutStats';
+import BodyMeasurements from '@/components/BodyMeasurements';
 
 const Index = () => {
   const { toast } = useToast();
@@ -271,12 +275,16 @@ const Index = () => {
 
   return (
     <div className="container mx-auto px-4 py-6 max-w-2xl">
+      <div className="flex justify-end mb-4">
+        <ThemeToggle />
+      </div>
+      
       <Tabs 
         value={activeTab} 
         onValueChange={setActiveTab}
         className="mb-6"
       >
-        <TabsList className="grid grid-cols-3 mb-4">
+        <TabsList className="grid grid-cols-4 mb-4">
           <TabsTrigger value="current" className="flex items-center gap-1">
             <Dumbbell className="w-4 h-4" />
             <span>Treino Atual</span>
@@ -289,9 +297,15 @@ const Index = () => {
             <BarChart3 className="w-4 h-4" />
             <span>Análise</span>
           </TabsTrigger>
+          <TabsTrigger value="measurements" className="flex items-center gap-1">
+            <Ruler className="w-4 h-4" />
+            <span>Medições</span>
+          </TabsTrigger>
         </TabsList>
         
         <TabsContent value="current">
+          <WorkoutStats workoutHistory={workoutHistory} />
+          
           <WorkoutHeader 
             date={workout.date} 
             onSave={handleSaveWorkout}
@@ -323,7 +337,7 @@ const Index = () => {
           
           <div className="mb-6 space-y-4">
             {workout.exercises.map(exercise => (
-              <div key={exercise.id} className="bg-white rounded-lg shadow-md overflow-hidden">
+              <div key={exercise.id} className="bg-card rounded-lg shadow-md overflow-hidden">
                 <ExerciseTabs exercise={exercise}>
                   <ExerciseCard
                     exercise={exercise}
@@ -357,6 +371,10 @@ const Index = () => {
         
         <TabsContent value="analysis">
           <WeeklyVolumeAnalysis workoutHistory={workoutHistory} />
+        </TabsContent>
+        
+        <TabsContent value="measurements">
+          <BodyMeasurements />
         </TabsContent>
       </Tabs>
     </div>
