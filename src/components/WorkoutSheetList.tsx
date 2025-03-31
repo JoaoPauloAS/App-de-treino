@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { WorkoutSheet, Workout } from '@/types/workout';
+import { WorkoutSheet } from '@/types/workout';
 import { 
   Card, 
   CardHeader, 
@@ -13,8 +13,7 @@ import { Button } from '@/components/ui/button';
 import WorkoutSheetForm from '@/components/WorkoutSheetForm';
 import ShareWorkoutSheet from '@/components/ShareWorkoutSheet';
 import { CalendarIcon, Edit, Trash2 } from 'lucide-react';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface WorkoutSheetListProps {
   workoutSheets: WorkoutSheet[];
@@ -29,11 +28,13 @@ const WorkoutSheetList: React.FC<WorkoutSheetListProps> = ({
   onUpdate, 
   onDelete 
 }) => {
+  const isMobile = useIsMobile();
+
   if (workoutSheets.length === 0) {
     return (
       <div className="text-center py-8">
-        <p className="text-gray-500">Nenhuma ficha de treino encontrada.</p>
-        <p className="text-gray-500 mt-2">Crie uma nova ficha para começar.</p>
+        <p className="text-muted-foreground">Nenhuma ficha de treino encontrada.</p>
+        <p className="text-muted-foreground mt-2">Crie uma nova ficha para começar.</p>
       </div>
     );
   }
@@ -44,7 +45,7 @@ const WorkoutSheetList: React.FC<WorkoutSheetListProps> = ({
         <Card key={sheet.id} className="overflow-hidden">
           <CardHeader className="pb-2">
             <CardTitle className="flex justify-between items-center">
-              {sheet.name}
+              <span className="truncate">{sheet.name}</span>
               {sheet.isPublic && (
                 <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">
                   Compartilhado
@@ -61,36 +62,44 @@ const WorkoutSheetList: React.FC<WorkoutSheetListProps> = ({
             </CardDescription>
           </CardHeader>
           <CardContent className="pb-2">
-            <p className="text-sm text-muted-foreground line-clamp-2">
+            <div className="text-sm text-muted-foreground line-clamp-2">
               {sheet.description || 'Sem descrição'}
-            </p>
+            </div>
             <p className="text-sm font-medium mt-2">
               {sheet.exercises.length} exercícios
             </p>
           </CardContent>
-          <CardFooter className="flex justify-between pt-2">
-            <div className="flex gap-2">
+          <CardFooter className={`flex ${isMobile ? 'flex-col gap-2 items-stretch' : 'justify-between'} pt-2`}>
+            <div className={`flex ${isMobile ? 'w-full justify-between' : 'gap-2'}`}>
               <Button 
                 variant="outline" 
                 size="sm" 
                 onClick={() => onSelect(sheet)}
+                className={isMobile ? 'flex-1' : ''}
               >
                 Usar
               </Button>
-              <WorkoutSheetForm 
-                workout={sheet} 
-                onSave={onUpdate} 
-              />
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={() => onDelete(sheet.id)}
-                className="text-red-500 hover:text-red-700"
-              >
-                <Trash2 className="h-4 w-4" />
-              </Button>
+              <div className={isMobile ? 'flex gap-2' : ''}>
+                <WorkoutSheetForm 
+                  workout={sheet} 
+                  onSave={onUpdate} 
+                />
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => onDelete(sheet.id)}
+                  className="text-red-500 hover:text-red-700"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
-            <ShareWorkoutSheet workoutSheet={sheet} />
+            {isMobile && (
+              <ShareWorkoutSheet workoutSheet={sheet} />
+            )}
+            {!isMobile && (
+              <ShareWorkoutSheet workoutSheet={sheet} />
+            )}
           </CardFooter>
         </Card>
       ))}

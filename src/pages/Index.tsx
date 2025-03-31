@@ -13,18 +13,20 @@ import WorkoutSheetList from '@/components/WorkoutSheetList';
 import WeeklyVolumeAnalysis from '@/components/WeeklyVolumeAnalysis';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { v4 as uuidv4 } from 'uuid';
-import { ClipboardList, BarChart3, Dumbbell, Ruler, Users, LogIn, LogOut } from 'lucide-react';
+import { ClipboardList, BarChart3, Dumbbell, Ruler, Users, LogIn, LogOut, ListMinus } from 'lucide-react';
 import ThemeToggle from '@/components/ThemeToggle';
 import WorkoutStats from '@/components/WorkoutStats';
 import BodyMeasurements from '@/components/BodyMeasurements';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import ExerciseCommentsTab from '@/components/ExerciseCommentsTab';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const Index = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const { user, isAuthenticated, logout } = useAuth();
+  const isMobile = useIsMobile();
   
   const [workout, setWorkout] = useState<Workout>({
     id: uuidv4(),
@@ -293,8 +295,8 @@ const Index = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-6 max-w-2xl">
-      <div className="flex justify-between items-center mb-4">
+    <div className="container mx-auto px-4 py-4 max-w-2xl">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-2">
         <div>
           {isAuthenticated && (
             <div className="text-sm">
@@ -302,7 +304,7 @@ const Index = () => {
             </div>
           )}
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           {isAuthenticated ? (
             <>
               <Button 
@@ -311,7 +313,16 @@ const Index = () => {
                 onClick={() => navigate('/shared')}
               >
                 <Users className="w-4 h-4 mr-1" />
-                Treinos Compartilhados
+                <span className={isMobile ? 'hidden' : 'inline'}>Treinos Compartilhados</span>
+              </Button>
+              
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => navigate('/mesocycles')}
+              >
+                <ListMinus className="w-4 h-4 mr-1" />
+                <span className={isMobile ? 'hidden' : 'inline'}>Meso Ciclos</span>
               </Button>
               
               <Button 
@@ -326,7 +337,7 @@ const Index = () => {
                 }}
               >
                 <LogOut className="w-4 h-4 mr-1" />
-                Sair
+                <span className={isMobile ? 'hidden' : 'inline'}>Sair</span>
               </Button>
             </>
           ) : (
@@ -336,7 +347,7 @@ const Index = () => {
               onClick={() => navigate('/login')}
             >
               <LogIn className="w-4 h-4 mr-1" />
-              Login / Cadastro
+              <span className={isMobile ? 'hidden' : 'inline'}>Login / Cadastro</span>
             </Button>
           )}
           
@@ -349,23 +360,39 @@ const Index = () => {
         onValueChange={setActiveTab}
         className="mb-6"
       >
-        <TabsList className="grid grid-cols-4 mb-4">
+        <TabsList className={`grid ${isMobile ? 'grid-cols-2 gap-1 mb-2' : 'grid-cols-4 mb-4'}`}>
           <TabsTrigger value="current" className="flex items-center gap-1">
             <Dumbbell className="w-4 h-4" />
-            <span>Treino Atual</span>
+            <span>Treino</span>
           </TabsTrigger>
           <TabsTrigger value="sheets" className="flex items-center gap-1">
             <ClipboardList className="w-4 h-4" />
             <span>Fichas</span>
           </TabsTrigger>
-          <TabsTrigger value="analysis" className="flex items-center gap-1">
-            <BarChart3 className="w-4 h-4" />
-            <span>Análise</span>
-          </TabsTrigger>
-          <TabsTrigger value="measurements" className="flex items-center gap-1">
-            <Ruler className="w-4 h-4" />
-            <span>Medições</span>
-          </TabsTrigger>
+          {isMobile && (
+            <>
+              <TabsTrigger value="analysis" className="flex items-center gap-1 mt-1">
+                <BarChart3 className="w-4 h-4" />
+                <span>Análise</span>
+              </TabsTrigger>
+              <TabsTrigger value="measurements" className="flex items-center gap-1 mt-1">
+                <Ruler className="w-4 h-4" />
+                <span>Medições</span>
+              </TabsTrigger>
+            </>
+          )}
+          {!isMobile && (
+            <>
+              <TabsTrigger value="analysis" className="flex items-center gap-1">
+                <BarChart3 className="w-4 h-4" />
+                <span>Análise</span>
+              </TabsTrigger>
+              <TabsTrigger value="measurements" className="flex items-center gap-1">
+                <Ruler className="w-4 h-4" />
+                <span>Medições</span>
+              </TabsTrigger>
+            </>
+          )}
         </TabsList>
         
         <TabsContent value="current">
@@ -377,15 +404,15 @@ const Index = () => {
             selectedDay={selectedDay}
           />
           
-          <div className="flex justify-between items-center mb-6">
-            <div className="w-3/4">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+            <div className="w-full sm:w-3/4">
               <h2 className="text-lg font-medium mb-2">Dia do Treino</h2>
               <WeekdaySelector 
                 selectedDay={selectedDay} 
                 onChange={handleSelectWeekday} 
               />
             </div>
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-row sm:flex-col gap-2 w-full sm:w-auto">
               <WorkoutSheetForm
                 workout={null}
                 onSave={handleSaveWorkoutSheet}
@@ -394,6 +421,7 @@ const Index = () => {
                 variant="outline" 
                 size="sm" 
                 onClick={handleCreateWorkoutSheetFromCurrent}
+                className="text-sm"
               >
                 Salvar como Ficha
               </Button>
@@ -426,7 +454,7 @@ const Index = () => {
         
         <TabsContent value="sheets">
           <div className="mb-6">
-            <div className="flex justify-between items-center mb-4">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-2">
               <h2 className="text-xl font-bold">Minhas Fichas de Treino</h2>
               <WorkoutSheetForm
                 workout={null}
