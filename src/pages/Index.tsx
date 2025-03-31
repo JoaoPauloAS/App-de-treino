@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
@@ -357,7 +358,7 @@ const Index = () => {
         onValueChange={setActiveTab}
         className="mb-6"
       >
-        <TabsList className={`grid w-full ${isMobile ? 'grid-cols-2 gap-1 mb-4' : 'grid-cols-4 mb-4'}`}>
+        <TabsList className={`grid w-full ${isMobile ? 'grid-cols-2 gap-1 mb-8' : 'grid-cols-4 mb-4'}`}>
           <TabsTrigger value="current" className="flex items-center gap-1">
             <Dumbbell className="w-4 h-4" />
             <span>Treino</span>
@@ -392,7 +393,7 @@ const Index = () => {
           )}
         </TabsList>
         
-        <TabsContent value="current">
+        <TabsContent value="current" className={isMobile ? "mt-6" : "mt-2"}>
           <WorkoutStats workoutHistory={workoutHistory} />
           
           <WorkoutHeader 
@@ -449,7 +450,7 @@ const Index = () => {
           <ExerciseForm onAddExercise={handleAddExercise} />
         </TabsContent>
         
-        <TabsContent value="sheets">
+        <TabsContent value="sheets" className={isMobile ? "mt-6" : "mt-2"}>
           <div className="mb-6">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-2">
               <h2 className="text-xl font-bold mb-4 sm:mb-0">Minhas Fichas de Treino</h2>
@@ -467,11 +468,11 @@ const Index = () => {
           </div>
         </TabsContent>
         
-        <TabsContent value="analysis">
+        <TabsContent value="analysis" className={isMobile ? "mt-6" : "mt-2"}>
           <WeeklyVolumeAnalysis workoutHistory={workoutHistory} />
         </TabsContent>
         
-        <TabsContent value="measurements">
+        <TabsContent value="measurements" className={isMobile ? "mt-6" : "mt-2"}>
           <BodyMeasurements />
         </TabsContent>
       </Tabs>

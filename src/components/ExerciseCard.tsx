@@ -227,7 +227,7 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
                 className="w-full text-green-500 hover:text-green-700 sm:hidden"
                 onClick={markExerciseAsCompleted}
               >
-                <CheckCircle className="h-4 w-4 mr-2" /> Marcar exercício como concluído
+                <CheckCircle className="h-4 w-4 mr-2" /> Concluir
               </Button>
             )}
           </div>
