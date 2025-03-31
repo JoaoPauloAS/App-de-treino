@@ -357,7 +357,7 @@ const Index = () => {
         onValueChange={setActiveTab}
         className="mb-6"
       >
-        <TabsList className={`grid ${isMobile ? 'grid-cols-2 gap-1 mb-2' : 'grid-cols-4 mb-4'}`}>
+        <TabsList className={`grid w-full ${isMobile ? 'grid-cols-2 gap-1 mb-4' : 'grid-cols-4 mb-4'}`}>
           <TabsTrigger value="current" className="flex items-center gap-1">
             <Dumbbell className="w-4 h-4" />
             <span>Treino</span>
@@ -452,7 +452,7 @@ const Index = () => {
         <TabsContent value="sheets">
           <div className="mb-6">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-2">
-              <h2 className="text-xl font-bold mb-2 sm:mb-0">Minhas Fichas de Treino</h2>
+              <h2 className="text-xl font-bold mb-4 sm:mb-0">Minhas Fichas de Treino</h2>
               <WorkoutSheetForm
                 workout={null}
                 onSave={handleSaveWorkoutSheet}
