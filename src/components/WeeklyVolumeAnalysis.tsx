@@ -16,6 +16,8 @@ import {
 } from 'recharts';
 import { MuscleGroup, Workout } from '@/types/workout';
 import { ChartContainer, ChartTooltipContent } from "@/components/ui/chart";
+import ExerciseProgressionChart from './ExerciseProgressionChart';
+import { Activity, PieChart as PieChartIcon } from 'lucide-react';
 
 interface WeeklyVolumeAnalysisProps {
   workoutHistory: Record<string, Workout[]>;
@@ -91,77 +93,87 @@ const WeeklyVolumeAnalysis: React.FC<WeeklyVolumeAnalysisProps> = ({ workoutHist
   }, [workoutHistory]);
   
   return (
-    <Card className="w-full">
-      <CardHeader>
-        <CardTitle>Volume Semanal por Grupo Muscular</CardTitle>
-        <CardDescription>
-          Total de séries realizadas para cada grupo muscular nos últimos 7 dias
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Tabs defaultValue="bar" className="w-full">
-          <TabsList className="mb-4 grid grid-cols-2">
-            <TabsTrigger value="bar">Gráfico de Barras</TabsTrigger>
-            <TabsTrigger value="pie">Gráfico de Pizza</TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="bar">
-            {volumeData.length > 0 ? (
-              <div className="h-72">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={volumeData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis label={{ value: 'Séries', angle: -90, position: 'insideLeft' }} />
-                    <Tooltip content={<CustomTooltip />} />
-                    <Bar dataKey="sets" name="Séries">
-                      {volumeData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
-                      ))}
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-            ) : (
-              <p className="text-center text-gray-500 my-8">
-                Sem dados de treino na última semana ou faltam grupos musculares nos exercícios.
-              </p>
-            )}
-          </TabsContent>
-          
-          <TabsContent value="pie">
-            {pieData.length > 0 ? (
-              <div className="h-72">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={pieData}
-                      cx="50%"
-                      cy="50%"
-                      labelLine={false}
-                      label={renderCustomizedLabel}
-                      outerRadius={80}
-                      fill="#8884d8"
-                      dataKey="value"
-                    >
-                      {pieData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
-                      ))}
-                    </Pie>
-                    <Tooltip content={<CustomPieTooltip />} />
-                    <Legend />
-                  </PieChart>
-                </ResponsiveContainer>
-              </div>
-            ) : (
-              <p className="text-center text-gray-500 my-8">
-                Sem dados de treino na última semana ou faltam grupos musculares nos exercícios.
-              </p>
-            )}
-          </TabsContent>
-        </Tabs>
-      </CardContent>
-    </Card>
+    <div className="space-y-6">
+      <ExerciseProgressionChart workoutHistory={workoutHistory} />
+      
+      <Card className="w-full">
+        <CardHeader>
+          <CardTitle>Volume Semanal por Grupo Muscular</CardTitle>
+          <CardDescription>
+            Total de séries realizadas para cada grupo muscular nos últimos 7 dias
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Tabs defaultValue="bar" className="w-full">
+            <TabsList className="mb-4 grid grid-cols-2">
+              <TabsTrigger value="bar" className="flex items-center gap-1">
+                <Activity className="h-4 w-4" />
+                <span>Barras</span>
+              </TabsTrigger>
+              <TabsTrigger value="pie" className="flex items-center gap-1">
+                <PieChartIcon className="h-4 w-4" />
+                <span>Pizza</span>
+              </TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="bar">
+              {volumeData.length > 0 ? (
+                <div className="h-72">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={volumeData}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="name" />
+                      <YAxis label={{ value: 'Séries', angle: -90, position: 'insideLeft' }} />
+                      <Tooltip content={<CustomTooltip />} />
+                      <Bar dataKey="sets" name="Séries">
+                        {volumeData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.color} />
+                        ))}
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              ) : (
+                <p className="text-center text-gray-500 my-8">
+                  Sem dados de treino na última semana ou faltam grupos musculares nos exercícios.
+                </p>
+              )}
+            </TabsContent>
+            
+            <TabsContent value="pie">
+              {pieData.length > 0 ? (
+                <div className="h-72">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={pieData}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={false}
+                        label={renderCustomizedLabel}
+                        outerRadius={80}
+                        fill="#8884d8"
+                        dataKey="value"
+                      >
+                        {pieData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.color} />
+                        ))}
+                      </Pie>
+                      <Tooltip content={<CustomPieTooltip />} />
+                      <Legend />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+              ) : (
+                <p className="text-center text-gray-500 my-8">
+                  Sem dados de treino na última semana ou faltam grupos musculares nos exercícios.
+                </p>
+              )}
+            </TabsContent>
+          </Tabs>
+        </CardContent>
+      </Card>
+    </div>
   );
 };
 
