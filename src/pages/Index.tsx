@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
@@ -156,7 +155,6 @@ const Index = () => {
   };
 
   const handleSaveWorkout = () => {
-    // Adicionar informações do usuário
     const workoutToSave = {
       ...workout,
       createdBy: user?.id
@@ -198,7 +196,6 @@ const Index = () => {
   };
 
   const handleSaveWorkoutSheet = (workoutSheet: WorkoutSheet) => {
-    // Adicionar informações do usuário
     const sheetToSave = {
       ...workoutSheet,
       createdBy: user?.id
@@ -455,7 +452,7 @@ const Index = () => {
         <TabsContent value="sheets">
           <div className="mb-6">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-2">
-              <h2 className="text-xl font-bold">Minhas Fichas de Treino</h2>
+              <h2 className="text-xl font-bold mb-2 sm:mb-0">Minhas Fichas de Treino</h2>
               <WorkoutSheetForm
                 workout={null}
                 onSave={handleSaveWorkoutSheet}
