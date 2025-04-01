@@ -21,6 +21,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import ExerciseCommentsTab from '@/components/ExerciseCommentsTab';
 import { useIsMobile } from '@/hooks/use-mobile';
+import ExerciseProgressionChart from '@/components/ExerciseProgressionChart';
 
 const Index = () => {
   const { toast } = useToast();
@@ -119,6 +120,18 @@ const Index = () => {
         ex.id === updatedExercise.id ? updatedExercise : ex
       ),
     }));
+  };
+
+  const handleDeleteExercise = (exerciseId: string) => {
+    setWorkout(prev => ({
+      ...prev,
+      exercises: prev.exercises.filter(ex => ex.id !== exerciseId),
+    }));
+    
+    toast({
+      title: "Exercício excluído",
+      description: "O exercício foi removido do seu treino.",
+    });
   };
 
   const handleSelectWeekday = (day: Weekday) => {
@@ -441,6 +454,7 @@ const Index = () => {
                   <ExerciseCard
                     exercise={exercise}
                     onExerciseUpdate={handleUpdateExercise}
+                    onExerciseDelete={handleDeleteExercise}
                   />
                 </ExerciseTabs>
               </div>
@@ -469,6 +483,7 @@ const Index = () => {
         </TabsContent>
         
         <TabsContent value="analysis" className={isMobile ? "mt-6" : "mt-2"}>
+          <ExerciseProgressionChart workoutHistory={workoutHistory} />
           <WeeklyVolumeAnalysis workoutHistory={workoutHistory} />
         </TabsContent>
         

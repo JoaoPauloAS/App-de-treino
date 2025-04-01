@@ -1,6 +1,6 @@
 
-import React, { useState } from 'react';
-import { Plus, Minus, Clock, Check, X, CheckCircle } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Plus, Minus, Clock, Check, X, CheckCircle, Edit, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,20 +8,48 @@ import { Exercise, Set } from '@/types/workout';
 import { v4 as uuidv4 } from 'uuid';
 import RestTimer from './RestTimer';
 import { useIsMobile } from '@/hooks/use-mobile';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { useToast } from "@/hooks/use-toast";
 
 interface ExerciseCardProps {
   exercise: Exercise;
   onExerciseUpdate: (updatedExercise: Exercise) => void;
+  onExerciseDelete?: (exerciseId: string) => void;
   readOnly?: boolean;
 }
 
 const ExerciseCard: React.FC<ExerciseCardProps> = ({ 
   exercise, 
   onExerciseUpdate, 
+  onExerciseDelete,
   readOnly = false
 }) => {
   const [isTimerActive, setIsTimerActive] = useState(false);
+  const [newExerciseName, setNewExerciseName] = useState(exercise.name);
+  const [isRenameDialogOpen, setIsRenameDialogOpen] = useState(false);
   const isMobile = useIsMobile();
+  const { toast } = useToast();
+  
+  // Sound effect for timer completion
+  const [timerSound] = useState(() => {
+    if (typeof window !== "undefined") {
+      return new Audio("/timer-complete.mp3");
+    }
+    return null;
+  });
 
   const addSet = () => {
     if (readOnly) return;
@@ -86,6 +114,54 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
     setIsTimerActive(!isTimerActive);
   };
 
+  const handleTimerComplete = () => {
+    setIsTimerActive(false);
+    // Play sound when timer completes
+    if (timerSound) {
+      timerSound.volume = 0.3; // Set a lower volume for a gentle sound
+      timerSound.play().catch(error => {
+        console.error("Error playing timer sound:", error);
+      });
+    }
+  };
+
+  const handleRenameExercise = () => {
+    if (readOnly) return;
+    
+    if (!newExerciseName.trim()) {
+      toast({
+        title: "Nome inválido",
+        description: "O nome do exercício não pode estar vazio.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    const updatedExercise = {
+      ...exercise,
+      name: newExerciseName,
+    };
+    
+    onExerciseUpdate(updatedExercise);
+    setIsRenameDialogOpen(false);
+    
+    toast({
+      title: "Exercício renomeado",
+      description: `O exercício foi renomeado para "${newExerciseName}".`,
+    });
+  };
+
+  const handleDeleteExercise = () => {
+    if (readOnly || !onExerciseDelete) return;
+    
+    onExerciseDelete(exercise.id);
+    
+    toast({
+      title: "Exercício excluído",
+      description: "O exercício foi excluído com sucesso.",
+    });
+  };
+
   const markExerciseAsCompleted = () => {
     if (readOnly) return;
     
@@ -114,6 +190,51 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
             {isExerciseCompleted && <CheckCircle className="h-4 w-4 text-green-500" />}
           </span>
           <div className="flex items-center space-x-2">
+            {!readOnly && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                    <span className="sr-only">Opções</span>
+                    <Edit className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <Dialog open={isRenameDialogOpen} onOpenChange={setIsRenameDialogOpen}>
+                    <DialogTrigger asChild>
+                      <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                        <Edit className="mr-2 h-4 w-4" />
+                        <span>Renomear</span>
+                      </DropdownMenuItem>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[425px]">
+                      <DialogHeader>
+                        <DialogTitle>Renomear Exercício</DialogTitle>
+                      </DialogHeader>
+                      <div className="grid gap-4 py-4">
+                        <div className="grid grid-cols-4 items-center gap-4">
+                          <Input
+                            id="name"
+                            value={newExerciseName}
+                            onChange={(e) => setNewExerciseName(e.target.value)}
+                            className="col-span-4"
+                            placeholder="Nome do exercício"
+                          />
+                        </div>
+                      </div>
+                      <DialogFooter>
+                        <Button type="button" onClick={handleRenameExercise}>Salvar</Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+                  
+                  <DropdownMenuItem onClick={handleDeleteExercise} className="text-red-500">
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    <span>Excluir</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
+            
             <Button 
               variant="outline" 
               size="sm" 
@@ -144,7 +265,7 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
           <div className="mb-4">
             <RestTimer 
               minutes={exercise.restTimeMinutes} 
-              onComplete={() => setIsTimerActive(false)} 
+              onComplete={handleTimerComplete} 
               onChangeTime={updateRestTime}
             />
           </div>
