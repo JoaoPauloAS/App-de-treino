@@ -1,4 +1,10 @@
 
+/**
+ * @file ExerciseForm.tsx
+ * @description Formulário para adicionar novos exercícios ao treino
+ * Permite configurar nome, séries, repetições, tempo de descanso e grupos musculares
+ */
+
 // Importações de bibliotecas e componentes necessários
 import React, { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
@@ -9,12 +15,21 @@ import { Label } from "@/components/ui/label";
 import { Exercise, MuscleGroup } from '@/types/workout';
 import MuscleGroupSelector from './MuscleGroupSelector';
 
-// Definição da interface para as props do componente
+/**
+ * Definição da interface para as props do componente
+ * @property {Function} onAddExercise - Função callback para adicionar um novo exercício
+ */
 interface ExerciseFormProps {
   onAddExercise: (exercise: Exercise) => void; // Função callback para adicionar um novo exercício
 }
 
-// Componente de formulário para adicionar novos exercícios
+/**
+ * Componente de formulário para adicionar novos exercícios
+ * Captura informações de configuração e cria um novo objeto de exercício
+ * 
+ * @param {ExerciseFormProps} props - Propriedades do componente
+ * @returns {JSX.Element} Formulário para criação de exercícios
+ */
 const ExerciseForm: React.FC<ExerciseFormProps> = ({ onAddExercise }) => {
   // Estados locais para armazenar os valores do formulário
   const [name, setName] = useState('');                     // Nome do exercício
@@ -23,7 +38,12 @@ const ExerciseForm: React.FC<ExerciseFormProps> = ({ onAddExercise }) => {
   const [restTime, setRestTime] = useState(1);              // Tempo de descanso em minutos
   const [muscleGroups, setMuscleGroups] = useState<MuscleGroup[]>([]); // Grupos musculares trabalhados
 
-  // Função para lidar com o envio do formulário
+  /**
+   * Função para lidar com o envio do formulário
+   * Cria um novo objeto de exercício e passa para o callback
+   * 
+   * @param {React.FormEvent} e - Evento de submissão do formulário
+   */
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     

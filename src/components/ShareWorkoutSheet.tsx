@@ -1,4 +1,10 @@
 
+/**
+ * @file ShareWorkoutSheet.tsx
+ * @description Componente para compartilhar fichas de treino
+ * Permite gerar e copiar links para compartilhamento
+ */
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -14,19 +20,37 @@ import { WorkoutSheet } from '@/types/workout';
 import { Share2, Copy, Check } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
+/**
+ * Interface de props do componente
+ * @property {WorkoutSheet} workoutSheet - Ficha de treino a ser compartilhada
+ */
 interface ShareWorkoutSheetProps {
   workoutSheet: WorkoutSheet;
 }
 
+/**
+ * Componente para compartilhar fichas de treino
+ * Exibe um diálogo com link de compartilhamento copiável
+ * 
+ * @param {ShareWorkoutSheetProps} props - Propriedades do componente
+ * @returns {JSX.Element | null} Interface para compartilhamento ou null se ficha não for pública
+ */
 const ShareWorkoutSheet: React.FC<ShareWorkoutSheetProps> = ({ workoutSheet }) => {
+  // Estado para controlar abertura do diálogo
   const [open, setOpen] = useState(false);
+  // Estado para controlar feedback visual de cópia
   const [copied, setCopied] = useState(false);
+  // Hook para exibir notificações toast
   const { toast } = useToast();
 
-  // Base URL for sharing - in a real app, this would be your production domain
+  // Base URL para compartilhamento - em um app real, seria o domínio de produção
   const baseUrl = window.location.origin;
   const shareUrl = `${baseUrl}/workout/${workoutSheet.shareId}`;
 
+  /**
+   * Manipula a cópia do link para a área de transferência
+   * Mostra feedback visual e notificação
+   */
   const handleCopy = () => {
     navigator.clipboard.writeText(shareUrl);
     setCopied(true);
@@ -36,22 +60,26 @@ const ShareWorkoutSheet: React.FC<ShareWorkoutSheetProps> = ({ workoutSheet }) =
       description: "Link da ficha de treino copiado para a área de transferência.",
     });
     
+    // Reset do estado de cópia após 2 segundos
     setTimeout(() => setCopied(false), 2000);
   };
 
-  // Only show share button if workout is public
+  // Só exibe o botão de compartilhamento se a ficha for pública
   if (!workoutSheet.isPublic) {
     return null;
   }
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
+      {/* Botão para abrir o diálogo de compartilhamento */}
       <DialogTrigger asChild>
         <Button variant="outline" size="sm" className="gap-2">
           <Share2 className="h-4 w-4" />
           Compartilhar
         </Button>
       </DialogTrigger>
+      
+      {/* Conteúdo do diálogo de compartilhamento */}
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Compartilhar Ficha de Treino</DialogTitle>

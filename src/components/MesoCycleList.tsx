@@ -1,4 +1,10 @@
 
+/**
+ * @file MesoCycleList.tsx
+ * @description Lista de meso ciclos de treinamento com opções de gerenciamento
+ * Exibe, edita e exclui meso ciclos, permitindo visualizar fichas de treino associadas
+ */
+
 import React from 'react';
 import { MesoCycle, WorkoutSheet } from '@/types/workout';
 import { 
@@ -28,6 +34,14 @@ import {
 } from "@/components/ui/accordion";
 import MesoCycleForm from './MesoCycleForm';
 
+/**
+ * Interface de props do componente
+ * @property {MesoCycle[]} mesoCycles - Array de meso ciclos a exibir
+ * @property {WorkoutSheet[]} workoutSheets - Fichas de treino disponíveis
+ * @property {Function} onUpdate - Callback para atualizar um meso ciclo
+ * @property {Function} onDelete - Callback para excluir um meso ciclo
+ * @property {Function} onSelectWorkoutSheet - Callback para selecionar uma ficha de treino
+ */
 interface MesoCycleListProps {
   mesoCycles: MesoCycle[];
   workoutSheets: WorkoutSheet[];
@@ -36,6 +50,13 @@ interface MesoCycleListProps {
   onSelectWorkoutSheet: (id: string) => void;
 }
 
+/**
+ * Componente para listar e gerenciar meso ciclos
+ * Exibe cards para cada meso ciclo com detalhes e opções de edição/exclusão
+ * 
+ * @param {MesoCycleListProps} props - Propriedades do componente
+ * @returns {JSX.Element} Lista de meso ciclos
+ */
 const MesoCycleList: React.FC<MesoCycleListProps> = ({ 
   mesoCycles, 
   workoutSheets, 
@@ -43,22 +64,36 @@ const MesoCycleList: React.FC<MesoCycleListProps> = ({
   onDelete,
   onSelectWorkoutSheet
 }) => {
-  // Função para verificar se o meso ciclo está ativo (data atual entre início e fim)
+  /**
+   * Função para verificar se o meso ciclo está ativo (data atual entre início e fim)
+   * @param {Date} startDate - Data de início do meso ciclo
+   * @param {Date} endDate - Data de fim do meso ciclo
+   * @returns {boolean} true se o meso ciclo estiver ativo, false caso contrário
+   */
   const isMesoCycleActive = (startDate: Date, endDate: Date) => {
     const now = new Date();
     return now >= new Date(startDate) && now <= new Date(endDate);
   };
 
-  // Função para formatar a data
+  /**
+   * Função para formatar a data
+   * @param {Date} date - Data a ser formatada
+   * @returns {string} Data formatada como DD/MM/YYYY
+   */
   const formatDate = (date: Date) => {
     return format(new Date(date), 'dd/MM/yyyy');
   };
 
-  // Função para encontrar a ficha de treino pelo ID
+  /**
+   * Função para encontrar a ficha de treino pelo ID
+   * @param {string} id - ID da ficha de treino
+   * @returns {WorkoutSheet | undefined} Ficha de treino encontrada ou undefined
+   */
   const findWorkoutSheet = (id: string) => {
     return workoutSheets.find(sheet => sheet.id === id);
   };
 
+  // Se não houver meso ciclos, exibe mensagem informativa
   if (mesoCycles.length === 0) {
     return (
       <div className="text-center py-8">

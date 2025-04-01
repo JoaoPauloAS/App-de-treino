@@ -1,11 +1,26 @@
+
+/**
+ * @file accordion.tsx
+ * @description Componente de acordeão para exibir conteúdo colapsável
+ * Implementação usando Radix UI Accordion com animações e estilização
+ */
+
 import * as React from "react"
 import * as AccordionPrimitive from "@radix-ui/react-accordion"
 import { ChevronDown } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * Componente base do Accordion
+ * Raiz do acordeão que contém os itens colapsáveis
+ */
 const Accordion = AccordionPrimitive.Root
 
+/**
+ * Componente para cada item do acordeão
+ * Representa uma seção colapsável individual
+ */
 const AccordionItem = React.forwardRef<
   React.ElementRef<typeof AccordionPrimitive.Item>,
   React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Item>
@@ -18,6 +33,10 @@ const AccordionItem = React.forwardRef<
 ))
 AccordionItem.displayName = "AccordionItem"
 
+/**
+ * Componente para o gatilho do acordeão
+ * Botão que alterna a visibilidade do conteúdo
+ */
 const AccordionTrigger = React.forwardRef<
   React.ElementRef<typeof AccordionPrimitive.Trigger>,
   React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Trigger>
@@ -38,6 +57,10 @@ const AccordionTrigger = React.forwardRef<
 ))
 AccordionTrigger.displayName = AccordionPrimitive.Trigger.displayName
 
+/**
+ * Componente para o conteúdo do acordeão
+ * Área que é exibida/ocultada quando o gatilho é acionado
+ */
 const AccordionContent = React.forwardRef<
   React.ElementRef<typeof AccordionPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Content>

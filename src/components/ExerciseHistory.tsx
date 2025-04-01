@@ -1,4 +1,10 @@
 
+/**
+ * @file ExerciseHistory.tsx
+ * @description Componente para visualização do histórico de um exercício
+ * Exibe dados históricos de desempenho em forma de gráfico e tabela detalhada
+ */
+
 // Importações de bibliotecas, componentes e tipos
 import React from 'react';
 import { format } from 'date-fns';
@@ -20,20 +26,33 @@ import {
 } from '@/components/ui/chart';
 import { Line, LineChart, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
-// Definição da interface de props do componente
+/**
+ * Definição da interface de props do componente
+ * @property {ExerciseHistory[]} history - Array com o histórico do exercício
+ * @property {string} exerciseName - Nome do exercício para exibição
+ */
 interface ExerciseHistoryProps {
   history: ExerciseHistory[];   // Array com o histórico do exercício
   exerciseName: string;         // Nome do exercício para exibição
 }
 
-// Componente para exibir o histórico de um exercício, incluindo gráfico e tabela
+/**
+ * Componente para exibir o histórico de um exercício, incluindo gráfico e tabela
+ * Visualiza a progressão de peso e repetições ao longo do tempo
+ * 
+ * @param {ExerciseHistoryProps} props - Propriedades do componente
+ * @returns {JSX.Element} Interface de visualização de histórico com gráfico e tabela
+ */
 const ExerciseHistoryComponent: React.FC<ExerciseHistoryProps> = ({ history, exerciseName }) => {
   // Verifica se existe histórico para exibir
   if (!history || history.length === 0) {
     return <p className="text-gray-500 italic">Sem histórico disponível.</p>;
   }
 
-  // Prepara os dados para o gráfico
+  /**
+   * Prepara os dados para o gráfico transformando o histórico
+   * Extrai informações relevantes como data, peso máximo e total de repetições
+   */
   const chartData = history.map(item => {
     // Encontra o peso máximo usado nesse dia
     const maxWeight = item.sets.reduce((max, set) => 
@@ -49,7 +68,10 @@ const ExerciseHistoryComponent: React.FC<ExerciseHistoryProps> = ({ history, exe
     };
   });
 
-  // Configuração do gráfico com cores e legendas
+  /**
+   * Configuração do gráfico com cores e legendas
+   * Define como os dados serão visualizados
+   */
   const chartConfig = {
     weight: {
       label: "Peso (kg)",

@@ -1,4 +1,15 @@
 
+/**
+ * @file App.tsx
+ * @description Componente principal da aplicação que configura o roteamento e os provedores de contexto
+ * Este arquivo é o ponto de entrada da aplicação React e configura:
+ * - Roteamento com react-router-dom
+ * - Cliente de consulta para gerenciamento de dados com React Query
+ * - Provedor de tema para alternância entre temas claro/escuro
+ * - Provedor de autenticação para gerenciar o estado de login do usuário
+ * - Componentes de notificação Toast
+ */
+
 // Importações de componentes e bibliotecas
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -14,7 +25,11 @@ import NotFound from "./pages/NotFound";
 import { ThemeProvider } from "./hooks/use-theme";
 import { AuthProvider } from "./context/AuthContext";
 
-// Configuração do cliente de consulta com opções padrão
+/**
+ * Configuração do cliente de consulta com opções padrão para melhorar a experiência do usuário
+ * - Desabilita novas consultas quando a janela ganha foco para reduzir chamadas desnecessárias
+ * - Configura apenas uma tentativa de nova consulta em caso de falha para reduzir esperas
+ */
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -24,7 +39,11 @@ const queryClient = new QueryClient({
   },
 });
 
-// Componente principal da aplicação
+/**
+ * Componente principal da aplicação
+ * Configura a estrutura completa da aplicação com todos os provedores e rotas
+ * @returns {JSX.Element} A aplicação completa com roteamento e provedores configurados
+ */
 const App = () => (
   // Configura o roteamento da aplicação
   <BrowserRouter>

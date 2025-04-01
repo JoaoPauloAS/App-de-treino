@@ -1,8 +1,18 @@
 
+/**
+ * @file card.tsx
+ * @description Componentes para criar cards estilizados
+ * Fornece uma estrutura de card com cabeçalho, conteúdo e rodapé
+ */
+
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * Componente Card principal
+ * Container base para o padrão de cartão na interface
+ */
 const Card = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
@@ -18,6 +28,10 @@ const Card = React.forwardRef<
 ))
 Card.displayName = "Card"
 
+/**
+ * Componente CardHeader
+ * Cabeçalho do cartão, geralmente contém título e descrição
+ */
 const CardHeader = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
@@ -30,6 +44,10 @@ const CardHeader = React.forwardRef<
 ))
 CardHeader.displayName = "CardHeader"
 
+/**
+ * Componente CardTitle
+ * Título do cartão, normalmente usado dentro do CardHeader
+ */
 const CardTitle = React.forwardRef<
   HTMLParagraphElement,
   React.HTMLAttributes<HTMLHeadingElement>
@@ -45,6 +63,10 @@ const CardTitle = React.forwardRef<
 ))
 CardTitle.displayName = "CardTitle"
 
+/**
+ * Componente CardDescription
+ * Subtítulo ou descrição do cartão, normalmente usado dentro do CardHeader
+ */
 const CardDescription = React.forwardRef<
   HTMLParagraphElement,
   React.HTMLAttributes<HTMLParagraphElement>
@@ -57,6 +79,10 @@ const CardDescription = React.forwardRef<
 ))
 CardDescription.displayName = "CardDescription"
 
+/**
+ * Componente CardContent
+ * Conteúdo principal do cartão
+ */
 const CardContent = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
@@ -65,6 +91,10 @@ const CardContent = React.forwardRef<
 ))
 CardContent.displayName = "CardContent"
 
+/**
+ * Componente CardFooter
+ * Rodapé do cartão, geralmente contém ações ou informações adicionais
+ */
 const CardFooter = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>

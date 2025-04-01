@@ -1,4 +1,10 @@
 
+/**
+ * @file ExerciseTabs.tsx
+ * @description Componente de abas para exibir diferentes visualizações de um exercício
+ * Permite alternar entre informações do exercício, histórico e comentários
+ */
+
 // Importações de React, componentes UI e tipos
 import React, { ReactNode } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -7,14 +13,25 @@ import ExerciseHistory from './ExerciseHistory';
 import { MessageSquare, BarChart2 } from 'lucide-react';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
 
-// Definição da interface de props do componente
+/**
+ * Definição da interface de props do componente
+ * @property {Exercise} exercise - Dados do exercício a ser exibido
+ * @property {ReactNode} children - Conteúdo da aba principal (normalmente o ExerciseCard)
+ * @property {ReactNode} commentTab - Conteúdo opcional da aba de comentários
+ */
 interface ExerciseTabsProps {
   exercise: Exercise;                // Dados do exercício
   children: ReactNode;               // Conteúdo da aba principal (normalmente o ExerciseCard)
   commentTab?: ReactNode;            // Conteúdo opcional da aba de comentários
 }
 
-// Componente de abas para mostrar diferentes visualizações de um exercício
+/**
+ * Componente de abas para mostrar diferentes visualizações de um exercício
+ * Organiza a interface em abas para melhor experiência do usuário
+ * 
+ * @param {ExerciseTabsProps} props - Propriedades do componente
+ * @returns {JSX.Element} Componente de abas para visualização do exercício
+ */
 const ExerciseTabs: React.FC<ExerciseTabsProps> = ({ exercise, children, commentTab }) => {
   // Verifica se o exercício tem histórico e comentários
   const hasHistory = exercise.history && exercise.history.length > 0;

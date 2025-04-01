@@ -1,8 +1,18 @@
 
+/**
+ * @file index.css
+ * @description Arquivo principal de estilos CSS da aplicação
+ * Define variáveis de design system, cores, espaçamentos e animações usando Tailwind CSS
+ */
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* 
+ * Definição do tema de cores e variáveis de design no tema claro
+ * Inclui cores para background, foreground, primária, secundária, etc.
+ */
 @layer base {
   :root {
     --background: 220 100% 99%;
@@ -45,6 +55,10 @@
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
+  /* 
+   * Definição do tema de cores e variáveis de design no tema escuro
+   * Sobrescreve as variáveis do tema claro para proporcionar uma experiência visual coerente
+   */
   .dark {
     --background: 220 20% 12%;
     --foreground: 210 40% 98%;
@@ -85,6 +99,10 @@
   }
 }
 
+/* 
+ * Aplicação de estilos base para todos os elementos
+ * Define transições suaves para mudanças de cores
+ */
 @layer base {
   * {
     @apply border-border transition-colors duration-200;
@@ -99,6 +117,10 @@
   }
 }
 
+/* 
+ * Classes utilitárias para os componentes de treino
+ * Define estilos consistentes para cartões, cabeçalhos e botões
+ */
 .workout-card {
   @apply bg-card rounded-lg shadow-md p-4 mb-4 border border-border/40 hover:border-border/70;
 }
@@ -115,6 +137,9 @@
   @apply bg-secondary text-secondary-foreground rounded-md px-4 py-2;
 }
 
+/* 
+ * Animações para transições suaves de elementos
+ */
 @keyframes fade-in {
   from {
     opacity: 0;
@@ -134,11 +159,16 @@
   animation: fade-in 0.35s ease-out forwards;
 }
 
+/* 
+ * Estilos para cartões com efeito de vidro
+ */
 .glass-card {
   @apply bg-card/70 backdrop-blur-sm border border-border/50 shadow-lg;
 }
 
-/* Animações suaves para os cards */
+/* 
+ * Animações suaves para cards e botões
+ */
 .card, .button {
   @apply transition-all duration-200;
 }

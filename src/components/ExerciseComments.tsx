@@ -1,4 +1,10 @@
 
+/**
+ * @file ExerciseComments.tsx
+ * @description Componente para gerenciar comentários em exercícios
+ * Permite adicionar, visualizar e excluir comentários para exercícios específicos
+ */
+
 // Importações de bibliotecas, componentes e tipos necessários
 import React, { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
@@ -8,13 +14,23 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { v4 as uuidv4 } from 'uuid';
 
-// Interface de props do componente
+/**
+ * Interface de props do componente
+ * @property {Exercise} exercise - Dados do exercício que receberá os comentários
+ * @property {Function} onUpdateExercise - Função para atualizar exercício com novos comentários
+ */
 interface ExerciseCommentsProps {
   exercise: Exercise;                           // Dados do exercício
   onUpdateExercise: (exercise: Exercise) => void; // Função para atualizar exercício com novos comentários
 }
 
-// Componente para gerenciar comentários em exercícios
+/**
+ * Componente para gerenciar comentários em exercícios
+ * Permite usuários autenticados adicionarem comentários e visualizar comentários existentes
+ * 
+ * @param {ExerciseCommentsProps} props - Propriedades do componente
+ * @returns {JSX.Element} Interface para gerenciamento de comentários
+ */
 const ExerciseComments: React.FC<ExerciseCommentsProps> = ({ exercise, onUpdateExercise }) => {
   // Acesso ao contexto de autenticação para verificar usuário logado
   const { user, isAuthenticated } = useAuth();
@@ -23,7 +39,10 @@ const ExerciseComments: React.FC<ExerciseCommentsProps> = ({ exercise, onUpdateE
   // Estado para armazenar o texto do comentário sendo digitado
   const [commentText, setCommentText] = useState('');
 
-  // Função para adicionar um novo comentário
+  /**
+   * Função para adicionar um novo comentário
+   * Verifica autenticação e valida o texto antes de adicionar
+   */
   const handleAddComment = () => {
     // Verifica se o usuário está autenticado
     if (!isAuthenticated) {
@@ -73,7 +92,12 @@ const ExerciseComments: React.FC<ExerciseCommentsProps> = ({ exercise, onUpdateE
     });
   };
 
-  // Função para excluir um comentário
+  /**
+   * Função para excluir um comentário
+   * Permite que o autor exclua seus próprios comentários
+   * 
+   * @param {string} commentId - ID do comentário a ser excluído
+   */
   const handleDeleteComment = (commentId: string) => {
     if (!exercise.comments) return;
 
@@ -96,7 +120,11 @@ const ExerciseComments: React.FC<ExerciseCommentsProps> = ({ exercise, onUpdateE
     });
   };
 
-  // Função auxiliar para formatar data de criação do comentário
+  /**
+   * Função auxiliar para formatar data de criação do comentário
+   * @param {Date} date - Data a ser formatada
+   * @returns {string} Data formatada como string legível
+   */
   const formatDate = (date: Date) => {
     return new Date(date).toLocaleString('pt-BR', {
       day: '2-digit',

@@ -1,4 +1,10 @@
 
+/**
+ * @file BodyMeasurements.tsx
+ * @description Componente para gerenciar medições corporais do usuário
+ * Permite adicionar, editar e excluir medições com persistência no localStorage
+ */
+
 // Importações de React, componentes e tipos necessários
 import React, { useState } from 'react';
 import { BodyMeasurement } from '@/types/workout';
@@ -8,12 +14,20 @@ import BodyMeasurementForm from './BodyMeasurementForm';
 import BodyMeasurementList from './BodyMeasurementList';
 import { useToast } from '@/components/ui/use-toast';
 
-// Componente principal para gerenciamento de medições corporais
+/**
+ * Componente principal para gerenciamento de medições corporais
+ * Centraliza a lógica de CRUD para medições corporais do usuário
+ * 
+ * @returns {JSX.Element} Interface para gerenciamento de medições corporais
+ */
 const BodyMeasurements: React.FC = () => {
   // Hook para exibir notificações toast
   const { toast } = useToast();
   
-  // Estado para armazenar a lista de medições corporais
+  /**
+   * Estado para armazenar a lista de medições corporais
+   * Inicializado com dados do localStorage se disponíveis
+   */
   const [measurements, setMeasurements] = useState<BodyMeasurement[]>(() => {
     // Carrega medições salvas do localStorage ao inicializar o componente
     const saved = localStorage.getItem('bodyMeasurements');
@@ -36,7 +50,12 @@ const BodyMeasurements: React.FC = () => {
   // Estado para controlar a exibição do formulário de novas medições
   const [showForm, setShowForm] = useState(false);
   
-  // Função para salvar uma nova medição
+  /**
+   * Função para salvar uma nova medição
+   * Adiciona à lista e persiste no localStorage
+   * 
+   * @param {BodyMeasurement} measurement - Nova medição a ser salva
+   */
   const saveMeasurement = (measurement: BodyMeasurement) => {
     const updated = [...measurements, measurement];
     setMeasurements(updated);
@@ -49,7 +68,12 @@ const BodyMeasurements: React.FC = () => {
     });
   };
   
-  // Função para atualizar uma medição existente
+  /**
+   * Função para atualizar uma medição existente
+   * Substitui a medição antiga pela nova versão
+   * 
+   * @param {BodyMeasurement} updated - Medição atualizada
+   */
   const updateMeasurement = (updated: BodyMeasurement) => {
     const updatedList = measurements.map(m => 
       m.id === updated.id ? updated : m
@@ -63,7 +87,12 @@ const BodyMeasurements: React.FC = () => {
     });
   };
   
-  // Função para excluir uma medição
+  /**
+   * Função para excluir uma medição
+   * Remove a medição da lista e atualiza o localStorage
+   * 
+   * @param {string} id - ID da medição a ser excluída
+   */
   const deleteMeasurement = (id: string) => {
     const filtered = measurements.filter(m => m.id !== id);
     setMeasurements(filtered);

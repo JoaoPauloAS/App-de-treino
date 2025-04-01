@@ -1,4 +1,10 @@
 
+/**
+ * @file WorkoutSheetList.tsx
+ * @description Lista de fichas de treino com opções de gerenciamento
+ * Exibe, seleciona, edita e exclui fichas de treino
+ */
+
 import React from 'react';
 import { WorkoutSheet } from '@/types/workout';
 import { 
@@ -15,6 +21,13 @@ import ShareWorkoutSheet from '@/components/ShareWorkoutSheet';
 import { CalendarIcon, Edit, Trash2 } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 
+/**
+ * Interface de props do componente
+ * @property {WorkoutSheet[]} workoutSheets - Array de fichas de treino a exibir
+ * @property {Function} onSelect - Callback para quando uma ficha for selecionada
+ * @property {Function} onUpdate - Callback para atualizar uma ficha
+ * @property {Function} onDelete - Callback para excluir uma ficha
+ */
 interface WorkoutSheetListProps {
   workoutSheets: WorkoutSheet[];
   onSelect: (workoutSheet: WorkoutSheet) => void;
@@ -22,14 +35,23 @@ interface WorkoutSheetListProps {
   onDelete: (id: string) => void;
 }
 
+/**
+ * Componente para listar e gerenciar fichas de treino
+ * Exibe cards para cada ficha com opções de uso, edição e exclusão
+ * 
+ * @param {WorkoutSheetListProps} props - Propriedades do componente
+ * @returns {JSX.Element} Lista de fichas de treino
+ */
 const WorkoutSheetList: React.FC<WorkoutSheetListProps> = ({ 
   workoutSheets, 
   onSelect, 
   onUpdate, 
   onDelete 
 }) => {
+  // Detecta se o dispositivo está em viewport mobile para ajustes de layout
   const isMobile = useIsMobile();
 
+  // Se não houver fichas, exibe mensagem informativa
   if (workoutSheets.length === 0) {
     return (
       <div className="text-center py-8">
