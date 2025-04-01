@@ -1,4 +1,5 @@
 
+// Importações de React, componentes UI e tipos
 import React, { ReactNode } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Exercise } from '@/types/workout';
@@ -6,24 +7,32 @@ import ExerciseHistory from './ExerciseHistory';
 import { MessageSquare, BarChart2 } from 'lucide-react';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
 
+// Definição da interface de props do componente
 interface ExerciseTabsProps {
-  exercise: Exercise;
-  children: ReactNode;
-  commentTab?: ReactNode;
+  exercise: Exercise;                // Dados do exercício
+  children: ReactNode;               // Conteúdo da aba principal (normalmente o ExerciseCard)
+  commentTab?: ReactNode;            // Conteúdo opcional da aba de comentários
 }
 
+// Componente de abas para mostrar diferentes visualizações de um exercício
 const ExerciseTabs: React.FC<ExerciseTabsProps> = ({ exercise, children, commentTab }) => {
+  // Verifica se o exercício tem histórico e comentários
   const hasHistory = exercise.history && exercise.history.length > 0;
   const hasComments = exercise.comments && exercise.comments.length > 0;
   
+  // Conta o número de comentários para exibição no badge
   const commentCount = exercise.comments?.length || 0;
 
   return (
     <Tabs defaultValue="exercise" className="w-full">
+      {/* Cabeçalho das abas */}
       <TabsList className="w-full bg-muted rounded-t-xl rounded-b-none border-b border-border/30 p-1">
+        {/* Aba principal do exercício */}
         <TabsTrigger value="exercise" className="data-[state=active]:bg-background rounded-lg">
           Exercício
         </TabsTrigger>
+        
+        {/* Aba de histórico (mostrada apenas se houver histórico) */}
         {hasHistory && (
           <TabsTrigger value="history" className="data-[state=active]:bg-background rounded-lg">
             <div className="flex items-center gap-1">
@@ -32,9 +41,12 @@ const ExerciseTabs: React.FC<ExerciseTabsProps> = ({ exercise, children, comment
             </div>
           </TabsTrigger>
         )}
+        
+        {/* Aba de comentários */}
         <TabsTrigger value="comments" className="flex items-center gap-1 data-[state=active]:bg-background rounded-lg">
           <MessageSquare className="w-4 h-4" />
           <span>Comentários</span>
+          {/* Badge com contador de comentários e tooltip */}
           {commentCount > 0 && (
             <HoverCard>
               <HoverCardTrigger asChild>
@@ -52,10 +64,12 @@ const ExerciseTabs: React.FC<ExerciseTabsProps> = ({ exercise, children, comment
         </TabsTrigger>
       </TabsList>
       
+      {/* Conteúdo da aba principal (Exercício) */}
       <TabsContent value="exercise" className="mt-2 p-3 animate-in fade-in">
         {children}
       </TabsContent>
       
+      {/* Conteúdo da aba de histórico (mostrado apenas se houver histórico) */}
       {hasHistory && (
         <TabsContent value="history" className="mt-2 p-3 animate-in fade-in">
           <ExerciseHistory 
@@ -65,6 +79,7 @@ const ExerciseTabs: React.FC<ExerciseTabsProps> = ({ exercise, children, comment
         </TabsContent>
       )}
       
+      {/* Conteúdo da aba de comentários */}
       <TabsContent value="comments" className="mt-2 p-3 animate-in fade-in">
         {commentTab}
       </TabsContent>

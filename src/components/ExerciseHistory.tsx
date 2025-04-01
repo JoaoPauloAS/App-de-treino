@@ -1,4 +1,5 @@
 
+// Importações de bibliotecas, componentes e tipos
 import React from 'react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -19,22 +20,26 @@ import {
 } from '@/components/ui/chart';
 import { Line, LineChart, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
+// Definição da interface de props do componente
 interface ExerciseHistoryProps {
-  history: ExerciseHistory[];
-  exerciseName: string;
+  history: ExerciseHistory[];   // Array com o histórico do exercício
+  exerciseName: string;         // Nome do exercício para exibição
 }
 
+// Componente para exibir o histórico de um exercício, incluindo gráfico e tabela
 const ExerciseHistoryComponent: React.FC<ExerciseHistoryProps> = ({ history, exerciseName }) => {
+  // Verifica se existe histórico para exibir
   if (!history || history.length === 0) {
     return <p className="text-gray-500 italic">Sem histórico disponível.</p>;
   }
 
+  // Prepara os dados para o gráfico
   const chartData = history.map(item => {
-    // Encontrando o peso máximo usado nesse dia
+    // Encontra o peso máximo usado nesse dia
     const maxWeight = item.sets.reduce((max, set) => 
       set.weight && set.weight > max ? set.weight : max, 0);
     
-    // Encontrando o total de repetições nesse dia
+    // Calcula o total de repetições nesse dia
     const totalReps = item.sets.reduce((total, set) => total + set.reps, 0);
     
     return {
@@ -44,6 +49,7 @@ const ExerciseHistoryComponent: React.FC<ExerciseHistoryProps> = ({ history, exe
     };
   });
 
+  // Configuração do gráfico com cores e legendas
   const chartConfig = {
     weight: {
       label: "Peso (kg)",
@@ -57,8 +63,10 @@ const ExerciseHistoryComponent: React.FC<ExerciseHistoryProps> = ({ history, exe
 
   return (
     <div className="space-y-4">
+      {/* Título do histórico */}
       <h3 className="text-lg font-semibold">{exerciseName} - Histórico</h3>
       
+      {/* Gráfico de progresso do exercício */}
       <div className="h-64 mb-4">
         <ChartContainer config={chartConfig}>
           <LineChart data={chartData}>
@@ -85,6 +93,7 @@ const ExerciseHistoryComponent: React.FC<ExerciseHistoryProps> = ({ history, exe
         </ChartContainer>
       </div>
       
+      {/* Tabela detalhada do histórico */}
       <Table>
         <TableHeader>
           <TableRow>

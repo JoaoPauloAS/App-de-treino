@@ -1,4 +1,5 @@
 
+// Importações de bibliotecas, componentes e tipos necessários
 import React, { useState, useEffect } from 'react';
 import { 
   LineChart, 
@@ -29,42 +30,50 @@ import {
 } from "@/components/ui/select";
 import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
 
+// Interface de props do componente
 interface ExerciseProgressionChartProps {
-  workoutHistory: Record<string, Workout[]>;
+  workoutHistory: Record<string, Workout[]>; // Histórico de treinos organizados por dia
 }
 
+// Tipo auxiliar para exercícios com histórico processado
 type ExerciseWithHistory = {
   name: string;
   history: { date: Date; maxWeight: number }[];
 };
 
+// Componente para mostrar a evolução de carga de exercícios ao longo do tempo
 const ExerciseProgressionChart: React.FC<ExerciseProgressionChartProps> = ({ workoutHistory }) => {
+  // Estados para armazenar a lista de exercícios e o exercício selecionado
   const [exercises, setExercises] = useState<ExerciseWithHistory[]>([]);
   const [selectedExercise, setSelectedExercise] = useState<string | null>(null);
 
+  // Processa o histórico de treinos para extrair os dados de evolução dos exercícios
   useEffect(() => {
-    // Extract all exercises with their history
+    // Mapa para armazenar o histórico de cada exercício
     const exerciseMap: Record<string, { date: Date; maxWeight: number }[]> = {};
     
+    // Percorre todos os treinos no histórico
     Object.values(workoutHistory).forEach(workouts => {
       workouts.forEach(workout => {
         workout.exercises.forEach(exercise => {
-          // Skip exercises with no completed sets
+          // Pula exercícios sem séries completadas
           if (!exercise.sets.some(set => set.completed)) return;
           
-          // Find max weight for this exercise in this workout
+          // Encontra o peso máximo para este exercício neste treino
           const completedSets = exercise.sets.filter(set => set.completed);
           if (completedSets.length === 0) return;
           
           const maxWeight = Math.max(...completedSets.map(set => set.weight || 0));
           
-          // Skip if max weight is 0
+          // Pula se o peso máximo for 0
           if (maxWeight === 0) return;
           
+          // Inicializa o array de histórico para o exercício se não existir
           if (!exerciseMap[exercise.name]) {
             exerciseMap[exercise.name] = [];
           }
           
+          // Adiciona o registro ao histórico do exercício
           exerciseMap[exercise.name].push({
             date: new Date(workout.date),
             maxWeight
@@ -73,23 +82,24 @@ const ExerciseProgressionChart: React.FC<ExerciseProgressionChartProps> = ({ wor
       });
     });
     
-    // Convert to array and sort history by date
+    // Converte o mapa para um array e ordena o histórico por data
     const exercisesList = Object.entries(exerciseMap).map(([name, history]) => ({
       name,
       history: history.sort((a, b) => a.date.getTime() - b.date.getTime())
     }));
     
-    // Sort exercises by name
+    // Ordena a lista de exercícios por nome
     exercisesList.sort((a, b) => a.name.localeCompare(b.name));
     
     setExercises(exercisesList);
     
-    // Set the first exercise as selected if available
+    // Define o primeiro exercício como selecionado, se disponível
     if (exercisesList.length > 0 && !selectedExercise) {
       setSelectedExercise(exercisesList[0].name);
     }
   }, [workoutHistory]);
 
+  // Prepara os dados para o gráfico do exercício selecionado
   const chartData = selectedExercise
     ? exercises
         .find(ex => ex.name === selectedExercise)
@@ -99,6 +109,7 @@ const ExerciseProgressionChart: React.FC<ExerciseProgressionChartProps> = ({ wor
         }))
     : [];
 
+  // Configuração para o gráfico
   const chartConfig = {
     weight: {
       label: "Peso (kg)",
@@ -117,6 +128,7 @@ const ExerciseProgressionChart: React.FC<ExerciseProgressionChartProps> = ({ wor
       <CardContent>
         {exercises.length > 0 ? (
           <>
+            {/* Seletor de exercício */}
             <div className="mb-4">
               <Select
                 value={selectedExercise || undefined}
@@ -135,6 +147,7 @@ const ExerciseProgressionChart: React.FC<ExerciseProgressionChartProps> = ({ wor
               </Select>
             </div>
             
+            {/* Gráfico de evolução do exercício */}
             {selectedExercise && chartData && chartData.length > 0 ? (
               <div className="h-64">
                 <ChartContainer config={chartConfig}>

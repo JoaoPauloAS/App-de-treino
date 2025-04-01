@@ -1,4 +1,5 @@
 
+// Importações de React, componentes e tipos necessários
 import React, { useState } from 'react';
 import { BodyMeasurement } from '@/types/workout';
 import { Button } from '@/components/ui/button';
@@ -7,13 +8,19 @@ import BodyMeasurementForm from './BodyMeasurementForm';
 import BodyMeasurementList from './BodyMeasurementList';
 import { useToast } from '@/components/ui/use-toast';
 
+// Componente principal para gerenciamento de medições corporais
 const BodyMeasurements: React.FC = () => {
+  // Hook para exibir notificações toast
   const { toast } = useToast();
+  
+  // Estado para armazenar a lista de medições corporais
   const [measurements, setMeasurements] = useState<BodyMeasurement[]>(() => {
+    // Carrega medições salvas do localStorage ao inicializar o componente
     const saved = localStorage.getItem('bodyMeasurements');
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
+        // Converte strings de data para objetos Date
         return parsed.map((m: any) => ({
           ...m,
           date: new Date(m.date)
@@ -26,8 +33,10 @@ const BodyMeasurements: React.FC = () => {
     return [];
   });
   
+  // Estado para controlar a exibição do formulário de novas medições
   const [showForm, setShowForm] = useState(false);
   
+  // Função para salvar uma nova medição
   const saveMeasurement = (measurement: BodyMeasurement) => {
     const updated = [...measurements, measurement];
     setMeasurements(updated);
@@ -40,6 +49,7 @@ const BodyMeasurements: React.FC = () => {
     });
   };
   
+  // Função para atualizar uma medição existente
   const updateMeasurement = (updated: BodyMeasurement) => {
     const updatedList = measurements.map(m => 
       m.id === updated.id ? updated : m
@@ -53,6 +63,7 @@ const BodyMeasurements: React.FC = () => {
     });
   };
   
+  // Função para excluir uma medição
   const deleteMeasurement = (id: string) => {
     const filtered = measurements.filter(m => m.id !== id);
     setMeasurements(filtered);
@@ -64,8 +75,10 @@ const BodyMeasurements: React.FC = () => {
     });
   };
   
+  // Renderização do componente
   return (
     <div className="space-y-6">
+      {/* Cabeçalho com título e botão para adicionar nova medição */}
       <div className="flex justify-between items-center">
         <h2 className="text-xl font-bold">Medições Corporais</h2>
         <Button onClick={() => setShowForm(!showForm)}>
@@ -74,12 +87,14 @@ const BodyMeasurements: React.FC = () => {
         </Button>
       </div>
       
+      {/* Formulário para adicionar nova medição (visível apenas quando showForm é true) */}
       {showForm && (
         <div className="mb-6">
           <BodyMeasurementForm onSave={saveMeasurement} />
         </div>
       )}
       
+      {/* Lista de medições existentes */}
       <BodyMeasurementList
         measurements={measurements}
         onUpdate={updateMeasurement}

@@ -1,4 +1,5 @@
 
+// Importações de bibliotecas, componentes e tipos necessários
 import React, { useState } from 'react';
 import { BodyMeasurement } from '@/types/workout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -29,18 +30,22 @@ import {
 } from "@/components/ui/alert-dialog";
 import BodyMeasurementForm from './BodyMeasurementForm';
 
+// Interface de props do componente
 interface BodyMeasurementListProps {
-  measurements: BodyMeasurement[];
-  onUpdate: (measurement: BodyMeasurement) => void;
-  onDelete: (id: string) => void;
+  measurements: BodyMeasurement[];                    // Lista de medições para exibir
+  onUpdate: (measurement: BodyMeasurement) => void;   // Função para atualizar uma medição
+  onDelete: (id: string) => void;                     // Função para excluir uma medição
 }
 
+// Componente para exibir uma lista de medições corporais
 const BodyMeasurementList: React.FC<BodyMeasurementListProps> = ({
   measurements,
   onUpdate,
   onDelete,
 }) => {
+  // Estado para controlar a medição em edição
   const [editMeasurement, setEditMeasurement] = useState<BodyMeasurement | null>(null);
+  // Estado para controlar a visibilidade do diálogo de edição
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   
   // Ordenando medições por data (mais recente primeiro)
@@ -48,11 +53,13 @@ const BodyMeasurementList: React.FC<BodyMeasurementListProps> = ({
     new Date(b.date).getTime() - new Date(a.date).getTime()
   );
   
+  // Manipulador para iniciar a edição de uma medição
   const handleEdit = (measurement: BodyMeasurement) => {
     setEditMeasurement(measurement);
     setIsEditDialogOpen(true);
   };
   
+  // Manipulador para confirmar a atualização de uma medição
   const handleUpdate = (updated: BodyMeasurement) => {
     onUpdate(updated);
     setIsEditDialogOpen(false);
@@ -66,10 +73,12 @@ const BodyMeasurementList: React.FC<BodyMeasurementListProps> = ({
       </CardHeader>
       <CardContent>
         {measurements.length === 0 ? (
+          // Mensagem quando não há medições
           <div className="text-center py-6 text-muted-foreground">
             Nenhuma medição registrada ainda.
           </div>
         ) : (
+          // Tabela com área de rolagem para exibir as medições
           <ScrollArea className="h-[400px]">
             <Table>
               <TableHeader>
@@ -98,6 +107,7 @@ const BodyMeasurementList: React.FC<BodyMeasurementListProps> = ({
                     </TableCell>
                     <TableCell>
                       <div className="flex space-x-2">
+                        {/* Botão de edição */}
                         <Button
                           variant="outline"
                           size="icon"
@@ -106,6 +116,7 @@ const BodyMeasurementList: React.FC<BodyMeasurementListProps> = ({
                           <Pencil className="h-4 w-4" />
                         </Button>
                         
+                        {/* Diálogo de confirmação para exclusão */}
                         <AlertDialog>
                           <AlertDialogTrigger asChild>
                             <Button variant="outline" size="icon" className="text-destructive">
@@ -140,6 +151,7 @@ const BodyMeasurementList: React.FC<BodyMeasurementListProps> = ({
         )}
       </CardContent>
       
+      {/* Diálogo para edição de medição */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
         <DialogContent>
           <DialogHeader>

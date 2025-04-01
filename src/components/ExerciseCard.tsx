@@ -1,4 +1,5 @@
 
+// Importação de bibliotecas, hooks e componentes necessários
 import React, { useState, useEffect } from 'react';
 import { Plus, Minus, Clock, Check, X, CheckCircle, Edit, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -24,26 +25,29 @@ import {
 } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 
+// Definição das props do componente
 interface ExerciseCardProps {
-  exercise: Exercise;
-  onExerciseUpdate: (updatedExercise: Exercise) => void;
-  onExerciseDelete?: (exerciseId: string) => void;
-  readOnly?: boolean;
+  exercise: Exercise;                                  // Dados do exercício a ser exibido
+  onExerciseUpdate: (updatedExercise: Exercise) => void; // Função para atualizar exercício
+  onExerciseDelete?: (exerciseId: string) => void;     // Função opcional para excluir exercício
+  readOnly?: boolean;                                 // Flag para modo somente leitura
 }
 
+// Componente principal de cartão de exercício
 const ExerciseCard: React.FC<ExerciseCardProps> = ({ 
   exercise, 
   onExerciseUpdate, 
   onExerciseDelete,
   readOnly = false
 }) => {
-  const [isTimerActive, setIsTimerActive] = useState(false);
-  const [newExerciseName, setNewExerciseName] = useState(exercise.name);
-  const [isRenameDialogOpen, setIsRenameDialogOpen] = useState(false);
-  const isMobile = useIsMobile();
-  const { toast } = useToast();
+  // Estados locais do componente
+  const [isTimerActive, setIsTimerActive] = useState(false);               // Controla se o timer está ativo
+  const [newExerciseName, setNewExerciseName] = useState(exercise.name);   // Nome ao renomear exercício
+  const [isRenameDialogOpen, setIsRenameDialogOpen] = useState(false);     // Controla diálogo de renomeação
+  const isMobile = useIsMobile();                                         // Verifica se é dispositivo móvel
+  const { toast } = useToast();                                           // Hook para mostrar notificações
   
-  // Sound effect for timer completion
+  // Inicialização do efeito sonoro para o timer
   const [timerSound] = useState(() => {
     if (typeof window !== "undefined") {
       return new Audio("/timer-complete.mp3");
@@ -51,9 +55,11 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
     return null;
   });
 
+  // Função para adicionar uma nova série ao exercício
   const addSet = () => {
     if (readOnly) return;
     
+    // Cria nova série com valores padrão
     const newSet: Set = {
       id: uuidv4(),
       reps: 0,
@@ -61,6 +67,7 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
       completed: false,
     };
     
+    // Atualiza o exercício com a nova série
     const updatedExercise = {
       ...exercise,
       sets: [...exercise.sets, newSet],
@@ -69,9 +76,11 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
     onExerciseUpdate(updatedExercise);
   };
 
+  // Função para remover uma série do exercício
   const removeSet = (setId: string) => {
     if (readOnly) return;
     
+    // Filtra a série a ser removida
     const updatedExercise = {
       ...exercise,
       sets: exercise.sets.filter(set => set.id !== setId),
@@ -80,9 +89,11 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
     onExerciseUpdate(updatedExercise);
   };
 
+  // Função para atualizar um campo específico de uma série
   const updateSet = (setId: string, field: keyof Set, value: any) => {
     if (readOnly) return;
     
+    // Mapeia as séries e atualiza o campo específico da série desejada
     const updatedSets = exercise.sets.map(set => {
       if (set.id === setId) {
         return { ...set, [field]: value };
@@ -90,6 +101,7 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
       return set;
     });
     
+    // Atualiza o exercício com as séries atualizadas
     const updatedExercise = {
       ...exercise,
       sets: updatedSets,
@@ -98,9 +110,11 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
     onExerciseUpdate(updatedExercise);
   };
 
+  // Função para atualizar o tempo de descanso
   const updateRestTime = (minutes: number) => {
     if (readOnly) return;
     
+    // Atualiza o exercício com o novo tempo de descanso
     const updatedExercise = {
       ...exercise,
       restTimeMinutes: minutes,
@@ -109,25 +123,29 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
     onExerciseUpdate(updatedExercise);
   };
 
+  // Alterna o estado do timer de descanso
   const toggleTimer = () => {
     if (readOnly) return;
     setIsTimerActive(!isTimerActive);
   };
 
+  // Manipulador para quando o timer completa
   const handleTimerComplete = () => {
     setIsTimerActive(false);
-    // Play sound when timer completes
+    // Toca som quando o timer completa
     if (timerSound) {
-      timerSound.volume = 0.3; // Set a lower volume for a gentle sound
+      timerSound.volume = 0.3; // Define um volume mais baixo para um som suave
       timerSound.play().catch(error => {
         console.error("Error playing timer sound:", error);
       });
     }
   };
 
+  // Função para renomear o exercício
   const handleRenameExercise = () => {
     if (readOnly) return;
     
+    // Verifica se o nome não está vazio
     if (!newExerciseName.trim()) {
       toast({
         title: "Nome inválido",
@@ -137,6 +155,7 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
       return;
     }
     
+    // Atualiza o exercício com o novo nome
     const updatedExercise = {
       ...exercise,
       name: newExerciseName,
@@ -151,6 +170,7 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
     });
   };
 
+  // Função para excluir o exercício
   const handleDeleteExercise = () => {
     if (readOnly || !onExerciseDelete) return;
     
@@ -162,10 +182,11 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
     });
   };
 
+  // Função para marcar todas as séries do exercício como concluídas
   const markExerciseAsCompleted = () => {
     if (readOnly) return;
     
-    // Mark all sets as completed
+    // Marca todas as séries como concluídas
     const updatedSets = exercise.sets.map(set => ({
       ...set,
       completed: true
@@ -179,8 +200,10 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
     onExerciseUpdate(updatedExercise);
   };
 
+  // Verifica se todas as séries do exercício estão concluídas
   const isExerciseCompleted = exercise.sets.length > 0 && exercise.sets.every(set => set.completed);
 
+  // Interface do componente
   return (
     <Card className="workout-card mb-6">
       <CardHeader className="pb-2">
@@ -261,6 +284,7 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
       </CardHeader>
       
       <CardContent>
+        {/* Exibe o timer de descanso se estiver ativo */}
         {isTimerActive && (
           <div className="mb-4">
             <RestTimer 
@@ -272,6 +296,7 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
         )}
         
         <div className="mb-4">
+          {/* Cabeçalho da tabela de séries */}
           <div className={`grid ${isMobile ? 'grid-cols-10' : 'grid-cols-12'} gap-2 font-medium text-sm text-gray-500 mb-2`}>
             <div className={`${isMobile ? 'col-span-1' : 'col-span-1'}`}>Set</div>
             <div className={`${isMobile ? 'col-span-3' : 'col-span-4'}`}>Reps</div>
@@ -279,6 +304,7 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
             <div className={`${isMobile ? 'col-span-3' : 'col-span-3'}`}>Status</div>
           </div>
           
+          {/* Lista de séries do exercício */}
           {exercise.sets.map((set, index) => (
             <div key={set.id} className={`grid ${isMobile ? 'grid-cols-10' : 'grid-cols-12'} gap-2 items-center mb-2`}>
               <div className={`${isMobile ? 'col-span-1' : 'col-span-1'} font-medium`}>{index + 1}</div>
@@ -332,6 +358,7 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
           ))}
         </div>
         
+        {/* Botões de adicionar série e concluir exercício (se não estiver em modo somente leitura) */}
         {!readOnly && (
           <div>
             <Button 

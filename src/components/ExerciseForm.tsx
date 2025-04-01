@@ -1,4 +1,5 @@
 
+// Importações de bibliotecas e componentes necessários
 import React, { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { Card, CardContent } from "@/components/ui/card";
@@ -8,47 +9,53 @@ import { Label } from "@/components/ui/label";
 import { Exercise, MuscleGroup } from '@/types/workout';
 import MuscleGroupSelector from './MuscleGroupSelector';
 
+// Definição da interface para as props do componente
 interface ExerciseFormProps {
-  onAddExercise: (exercise: Exercise) => void;
+  onAddExercise: (exercise: Exercise) => void; // Função callback para adicionar um novo exercício
 }
 
+// Componente de formulário para adicionar novos exercícios
 const ExerciseForm: React.FC<ExerciseFormProps> = ({ onAddExercise }) => {
-  const [name, setName] = useState('');
-  const [sets, setSets] = useState(3);
-  const [reps, setReps] = useState(12);
-  const [restTime, setRestTime] = useState(1);
-  const [muscleGroups, setMuscleGroups] = useState<MuscleGroup[]>([]);
+  // Estados locais para armazenar os valores do formulário
+  const [name, setName] = useState('');                     // Nome do exercício
+  const [sets, setSets] = useState(3);                      // Número de séries
+  const [reps, setReps] = useState(12);                     // Repetições por série
+  const [restTime, setRestTime] = useState(1);              // Tempo de descanso em minutos
+  const [muscleGroups, setMuscleGroups] = useState<MuscleGroup[]>([]); // Grupos musculares trabalhados
 
+  // Função para lidar com o envio do formulário
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Criar novo exercício
+    // Criar novo objeto de exercício com os valores do formulário
     const exercise: Exercise = {
-      id: uuidv4(),
+      id: uuidv4(), // Gera um ID único para o exercício
       name,
       restTimeMinutes: restTime,
       muscleGroups, // Incluir grupos musculares
       sets: Array(sets).fill(0).map(() => ({
-        id: uuidv4(),
+        id: uuidv4(), // Gera IDs únicos para cada série
         reps,
         weight: 0,
         completed: false
       }))
     };
     
-    // Chamar a função de callback
+    // Chamar a função de callback passada via props
     onAddExercise(exercise);
     
-    // Limpar o formulário
+    // Limpar o formulário para nova entrada
     setName('');
     setSets(3);
     setReps(12);
   };
 
+  // Renderização do componente
   return (
     <Card>
       <CardContent className="pt-6">
         <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Campo de nome do exercício */}
           <div className="space-y-2">
             <Label htmlFor="name">Nome do Exercício</Label>
             <Input
@@ -60,6 +67,7 @@ const ExerciseForm: React.FC<ExerciseFormProps> = ({ onAddExercise }) => {
             />
           </div>
           
+          {/* Campos para número de séries e repetições */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="sets">Número de Séries</Label>
@@ -86,6 +94,7 @@ const ExerciseForm: React.FC<ExerciseFormProps> = ({ onAddExercise }) => {
             </div>
           </div>
           
+          {/* Campo para tempo de descanso */}
           <div className="space-y-2">
             <Label htmlFor="rest">Tempo de Descanso (minutos)</Label>
             <Input
@@ -99,11 +108,13 @@ const ExerciseForm: React.FC<ExerciseFormProps> = ({ onAddExercise }) => {
             />
           </div>
           
+          {/* Seletor de grupos musculares */}
           <MuscleGroupSelector
             selectedGroups={muscleGroups}
             onChange={setMuscleGroups}
           />
           
+          {/* Botão de submissão do formulário */}
           <Button type="submit" className="w-full">Adicionar Exercício</Button>
         </form>
       </CardContent>
